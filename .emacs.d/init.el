@@ -60,7 +60,7 @@
 (use-package ivy
   :diminish
   :bind
-  (("M-o" . swiper)
+  (("M-o" . swiper-all-thing-at-point)
    ("M-x" . counsel-M-x)
    ("C-; L" . counsel-ibuffer)
    ("C-x C-f" . counsel-find-file)
@@ -252,6 +252,9 @@
   (setq lsp-keymap-prefix "C-c l")
   :config
   (lsp-enable-which-key-integration t)
+  (setq gc-cons-threshold 100000000)
+  (setq read-process-output-max (* 1024 1024)) ;; 1mb
+  (setq lsp-completion-provider :capf)
   :bind
   (:map lsp-mode-map
          ("TAB" . completion-at-point))
@@ -274,6 +277,8 @@
   (company-minimum-prefix-length 1)
   (company-idle-delay 0.0)
   )
+
+(use-package company-box)
 
 (use-package company
   :hook (company-mode . company-box-mode))
