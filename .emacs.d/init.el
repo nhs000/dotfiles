@@ -132,7 +132,8 @@
 
 
 
-
+(add-hook 'org-mode-hook (lambda () (org-indent-mode t)))
+(add-hook 'org-mode-hook #'toggle-truncate-lines)
 
 (use-package org-bullets
   :config
