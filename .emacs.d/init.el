@@ -36,6 +36,11 @@
 (add-to-list 'default-frame-alist '(ns-appearance . dark))
 (setq ns-use-proxy-icon  nil)
 (setq frame-title-format nil)
+(set-face-attribute 'default nil
+                    :family "Fira Code"
+                    :height 150
+                    :weight 'normal
+                    :width 'normal)
 
 (require 'package)
 (setq package-archives '(
