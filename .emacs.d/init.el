@@ -233,25 +233,42 @@
               (")" . dired-git-info-mode)))
 
 
+(defun efs/lsp-mode-setup ()
+  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+  (lsp-headerline-breadcrumb-mode))
+
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
+  :hook
+  (lsp-mode . efs/lsp-mode-setup)
+  ((typescript-mode js2-mode web-mode elpy-mode php-mode) . lsp)
   :init
   (setq lsp-keymap-prefix "C-c l")
   :config
   (lsp-enable-which-key-integration t)
+  :bind
+  (:map lsp-mode-map
+         ("TAB" . completion-at-point))
   )
 
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode))
 
-;; (use-package company
-;;   :init
-;;   (setq companyminimum-prefix-length 3)
-;;   (setq company-auto-complete nil)
-;;   (setq company-idle-delay 0)
-;;   (setq tab-always-indent 'complete)
-;;   :config
-;;   (global-company-mode 1)
-;;   (define-key company-active-map (kbd "C-n") #'company-select-next)
-;;   (define-key company-active-map (kbd "C-p") #'company-select-previous))
+(use-package company
+  :after lsp-mode
+  :hook (my-program-mode-hook . company-mode)
+  :bind
+  (:map lsp-mode-map ("<tab>" . company-indent-or-complete-common))
+  (:map company-active-map ("<tab>" . company-complete-selection))
+  (:map company-active-map ("C-n" . company-select-next))
+  (:map company-active-map ("C-p" . company-select-previous))
+  :custom
+  (company-minimum-prefix-length 1)
+  (company-idle-delay 0.0)
+  )
+
+(use-package company
+  :hook (company-mode . company-box-mode))
 
 ;; (use-package company-web)
 ;; (add-hook 'after-init-hook 'global-company-mode)
@@ -356,9 +373,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(lsp-modeline-workspace-status-enable nil)
  '(package-selected-packages
-   '(which-key web-mode use-package tide ssass-mode smex smartparens php-mode org-download org-bullets nameframe-perspective multiple-cursors mmm-mode magit lsp-mode leuven-theme js2-mode js-doc iy-go-to-char ivy-rich helm-swoop helm-projectile helm-perspeen helm-ag groovy-mode goto-chg go-mode git-timemachine fira-code-mode expand-region elpy edit-indirect dumb-jump dtrt-indent drag-stuff doom-themes doom-modeline docker-compose-mode dired-subtree dired-git-info counsel-projectile company-ycmd company-web company-jedi company-anaconda centaur-tabs bm anzu ag ace-window)))
+   '(lsp-ui company-box which-key web-mode use-package tide ssass-mode smex smartparens php-mode org-download org-bullets nameframe-perspective multiple-cursors mmm-mode magit lsp-mode leuven-theme js2-mode js-doc iy-go-to-char ivy-rich helm-swoop helm-projectile helm-perspeen helm-ag groovy-mode goto-chg go-mode git-timemachine fira-code-mode expand-region elpy edit-indirect dumb-jump dtrt-indent drag-stuff doom-themes doom-modeline docker-compose-mode dired-subtree dired-git-info counsel-projectile company-ycmd company-web company-jedi company-anaconda centaur-tabs bm anzu ag ace-window)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
