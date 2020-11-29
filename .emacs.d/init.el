@@ -254,6 +254,8 @@
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode))
 
+(use-package lsp-ivy)
+
 (use-package company
   :after lsp-mode
   :hook (my-program-mode-hook . company-mode)
@@ -374,7 +376,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(lsp-ui company-box which-key web-mode use-package tide ssass-mode smex smartparens php-mode org-download org-bullets nameframe-perspective multiple-cursors mmm-mode magit lsp-mode leuven-theme js2-mode js-doc iy-go-to-char ivy-rich helm-swoop helm-projectile helm-perspeen helm-ag groovy-mode goto-chg go-mode git-timemachine fira-code-mode expand-region elpy edit-indirect dumb-jump dtrt-indent drag-stuff doom-themes doom-modeline docker-compose-mode dired-subtree dired-git-info counsel-projectile company-ycmd company-web company-jedi company-anaconda centaur-tabs bm anzu ag ace-window)))
+   '(lsp-ivy lsp-ui company-box which-key web-mode use-package tide ssass-mode smex smartparens php-mode org-download org-bullets nameframe-perspective multiple-cursors mmm-mode magit lsp-mode leuven-theme js2-mode js-doc iy-go-to-char ivy-rich helm-swoop helm-projectile helm-perspeen helm-ag groovy-mode goto-chg go-mode git-timemachine fira-code-mode expand-region elpy edit-indirect dumb-jump dtrt-indent drag-stuff doom-themes doom-modeline docker-compose-mode dired-subtree dired-git-info counsel-projectile company-ycmd company-web company-jedi company-anaconda centaur-tabs bm anzu ag ace-window)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
