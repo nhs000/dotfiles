@@ -1,3 +1,10 @@
+(if (eq system-type 'darwin)
+    (setq mac-option-key-is-meta nil
+          mac-command-key-is-meta t
+          mac-command-modifier 'meta
+          mac-option-modifier 'none)
+  )
+
 (setq auto-window-vscroll nil)
 ;; (global-display-line-numbers-mode t)
 
@@ -38,9 +45,24 @@
 (setq frame-title-format nil)
 (set-face-attribute 'default nil
                     :family "Fira Code"
-                    :height 150
+                    :height 130
                     :weight 'normal
                     :width 'normal)
+
+
+(require 'misc)
+(global-set-key (kbd "M-f") 'forward-to-word)
+(global-set-key (kbd "M-e") 'forward-word)
+
+(global-set-key (kbd "C-; C-z") 'toggle-maximize-buffer)
+(defun toggle-maximize-buffer () "Maximize buffer"
+  (interactive)
+  (if (= 1 (length (window-list)))
+      (jump-to-register '_) 
+    (progn
+      (window-configuration-to-register '_)
+      (delete-other-windows))))
+
 
 (require 'package)
 (setq package-archives '(
@@ -53,6 +75,14 @@
 
 (require 'use-package)
 (setq use-package-always-ensure t)
+
+
+(use-package exec-path-from-shell
+  :init
+  (when (memq window-system '(mac ns x))
+	(exec-path-from-shell-initialize))
+  )
+
 
 ;; smart M-x
 (use-package smex)
@@ -230,7 +260,7 @@
 
 ;; attach image to orgmode
 
-;; (use-package 'org-download
+(use-package org-download)
 ;;              :ensure t)
 
 
@@ -274,7 +304,7 @@
   (:map company-active-map ("C-n" . company-select-next))
   (:map company-active-map ("C-p" . company-select-previous))
   :custom
-  (company-minimum-prefix-length 1)
+  (company-minimum-prefix-length 3)
   (company-idle-delay 0.0)
   )
 
@@ -293,6 +323,23 @@
   (typescript-mode . lsp-deferred)
   :config
   (setq typescript-indent-level 2))
+
+(use-package tide)
+(defun setup-tide-mode ()
+  (interactive)
+  (tide-setup)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (eldoc-mode +1)
+  (tide-hl-identifier-mode +1)
+  ;; company is an optional dependency. You have to
+  ;; install it separately via package-install
+  ;; `M-x package-install [ret] company`
+  (company-mode +1))
+
+(add-hook 'typescript-mode-hook #'setup-tide-mode)
+
+
 
 (use-package js2-mode
   :init
@@ -387,7 +434,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(lsp-ivy lsp-ui company-box which-key web-mode use-package tide ssass-mode smex smartparens php-mode org-download org-bullets nameframe-perspective multiple-cursors mmm-mode magit lsp-mode leuven-theme js2-mode js-doc iy-go-to-char ivy-rich helm-swoop helm-projectile helm-perspeen helm-ag groovy-mode goto-chg go-mode git-timemachine fira-code-mode expand-region elpy edit-indirect dumb-jump dtrt-indent drag-stuff doom-themes doom-modeline docker-compose-mode dired-subtree dired-git-info counsel-projectile company-ycmd company-web company-jedi company-anaconda centaur-tabs bm anzu ag ace-window)))
+   '(god-mode lsp-ivy lsp-ui company-box which-key web-mode use-package ssass-mode smex smartparens php-mode org-download org-bullets nameframe-perspective multiple-cursors mmm-mode magit lsp-mode leuven-theme js2-mode js-doc iy-go-to-char ivy-rich helm-swoop helm-projectile helm-perspeen helm-ag groovy-mode goto-chg go-mode git-timemachine fira-code-mode expand-region elpy edit-indirect dumb-jump dtrt-indent drag-stuff doom-themes doom-modeline docker-compose-mode dired-subtree dired-git-info counsel-projectile company-ycmd company-web company-jedi company-anaconda centaur-tabs bm anzu ag ace-window)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
