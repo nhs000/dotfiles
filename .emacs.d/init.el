@@ -123,7 +123,7 @@
 
 (use-package doom-themes
   :config
-  (load-theme 'doom-Iosvkem t)
+  (load-theme 'doom-solarized-light t)
   )
 
 
@@ -433,8 +433,42 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector
+   ["#222222" "#aa4450" "#87875f" "#cc8800" "#87AFD7" "#8787AF" "#87ceeb" "#c2c2b0"])
+ '(custom-safe-themes
+   '("e1ef2d5b8091f4953fe17b4ca3dd143d476c106e221d92ded38614266cea3c8b" "6c3b5f4391572c4176908bb30eddc1718344b8eaff50e162e36f271f6de015ca" "08a27c4cde8fcbb2869d71fdc9fa47ab7e4d31c27d40d59bf05729c4640ce834" "7b3d184d2955990e4df1162aeff6bfb4e1c3e822368f0359e15e2974235d9fa8" "54cf3f8314ce89c4d7e20ae52f7ff0739efb458f4326a2ca075bf34bc0b4f499" "6084dce7da6b7447dcb9f93a981284dc823bab54f801ebf8a8e362a5332d2753" "7d708f0168f54b90fc91692811263c995bebb9f68b8b7525d0e2200da9bc903c" "93ed23c504b202cf96ee591138b0012c295338f38046a1f3c14522d4a64d7308" "99ea831ca79a916f1bd789de366b639d09811501e8c092c85b2cb7d697777f93" "4f01c1df1d203787560a67c1b295423174fd49934deb5e6789abd1e61dba9552" "b5fff23b86b3fd2dd2cc86aa3b27ee91513adaefeaa75adc8af35a45ffb6c499" "bf387180109d222aee6bb089db48ed38403a1e330c9ec69fe1f52460a8936b66" "e074be1c799b509f52870ee596a5977b519f6d269455b84ed998666cf6fc802a" "c086fe46209696a2d01752c0216ed72fd6faeabaaaa40db9fc1518abebaf700d" "5b809c3eae60da2af8a8cfba4e9e04b4d608cb49584cb5998f6e4a1c87c057c4" "71e5acf6053215f553036482f3340a5445aee364fb2e292c70d9175fb0cc8af7" "9efb2d10bfb38fe7cd4586afb3e644d082cbcdb7435f3d1e8dd9413cbe5e61fc" "cae81b048b8bccb7308cdcb4a91e085b3c959401e74a0f125e7c5b173b916bf9" "01cf34eca93938925143f402c2e6141f03abb341f27d1c2dba3d50af9357ce70" "74ba9ed7161a26bfe04580279b8cad163c00b802f54c574bfa5d924b99daa4b9" "3df5335c36b40e417fec0392532c1b82b79114a05d5ade62cfe3de63a59bc5c6" "188fed85e53a774ae62e09ec95d58bb8f54932b3fd77223101d036e3564f9206" "f2927d7d87e8207fa9a0a003c0f222d45c948845de162c885bf6ad2a255babfd" "4bca89c1004e24981c840d3a32755bf859a6910c65b829d9441814000cf6c3d0" default))
+ '(fci-rule-color "#62686E")
+ '(jdee-db-active-breakpoint-face-colors (cons "#1d2127" "#87ceeb"))
+ '(jdee-db-requested-breakpoint-face-colors (cons "#1d2127" "#87875f"))
+ '(jdee-db-spec-breakpoint-face-colors (cons "#1d2127" "#686858"))
+ '(objed-cursor-color "#aa4450")
  '(package-selected-packages
-   '(god-mode lsp-ivy lsp-ui company-box which-key web-mode use-package ssass-mode smex smartparens php-mode org-download org-bullets nameframe-perspective multiple-cursors mmm-mode magit lsp-mode leuven-theme js2-mode js-doc iy-go-to-char ivy-rich helm-swoop helm-projectile helm-perspeen helm-ag groovy-mode goto-chg go-mode git-timemachine fira-code-mode expand-region elpy edit-indirect dumb-jump dtrt-indent drag-stuff doom-themes doom-modeline docker-compose-mode dired-subtree dired-git-info counsel-projectile company-ycmd company-web company-jedi company-anaconda centaur-tabs bm anzu ag ace-window)))
+   '(god-mode lsp-ivy lsp-ui company-box which-key web-mode use-package ssass-mode smex smartparens php-mode org-download org-bullets nameframe-perspective multiple-cursors mmm-mode magit lsp-mode leuven-theme js2-mode js-doc iy-go-to-char ivy-rich helm-swoop helm-projectile helm-perspeen helm-ag groovy-mode goto-chg go-mode git-timemachine fira-code-mode expand-region elpy edit-indirect dumb-jump dtrt-indent drag-stuff doom-themes doom-modeline docker-compose-mode dired-subtree dired-git-info counsel-projectile company-ycmd company-web company-jedi company-anaconda centaur-tabs bm anzu ag ace-window))
+ '(pdf-view-midnight-colors (cons "#c2c2b0" "#222222"))
+ '(rustic-ansi-faces
+   ["#222222" "#aa4450" "#87875f" "#cc8800" "#87AFD7" "#8787AF" "#87ceeb" "#c2c2b0"])
+ '(vc-annotate-background "#222222")
+ '(vc-annotate-color-map
+   (list
+    (cons 20 "#87875f")
+    (cons 40 "#9e873f")
+    (cons 60 "#b5871f")
+    (cons 80 "#cc8800")
+    (cons 100 "#dd8d00")
+    (cons 120 "#ee9200")
+    (cons 140 "#ff9800")
+    (cons 160 "#d7923a")
+    (cons 180 "#af8c74")
+    (cons 200 "#8787AF")
+    (cons 220 "#92708f")
+    (cons 240 "#9e5a6f")
+    (cons 260 "#aa4450")
+    (cons 280 "#994d51")
+    (cons 300 "#895654")
+    (cons 320 "#785f55")
+    (cons 340 "#62686E")
+    (cons 360 "#62686E")))
+ '(vc-annotate-very-old-color nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
