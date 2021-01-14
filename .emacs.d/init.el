@@ -316,6 +316,12 @@
 ;; (use-package company-web)
 ;; (add-hook 'after-init-hook 'global-company-mode)
 
+(use-package wgrep-ag)
+
+(use-package editorconfig
+  :config
+  (editorconfig-mode 1))
+
 
 (use-package typescript-mode
   :mode "\\.ts\\'"
@@ -382,6 +388,7 @@
   (which-function-mode t)
   (smartparens-mode t)
   )
+(add-hook 'tide-mode 'my-program-mode-hook)
 (add-hook 'typescript-mode 'my-program-mode-hook)
 (add-hook 'js-mode-hook 'my-program-mode-hook)
 (add-hook 'web-mode-hook 'my-program-mode-hook)
