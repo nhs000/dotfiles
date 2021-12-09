@@ -1,495 +1,563 @@
-* Setup
-** Key binding 
-   #+BEGIN_SRC emacs-lisp
+* General setup
+#+BEGIN_SRC emacs-lisp
+  (require 'package)
+  (setq package-archives '(
+                           ("melpa" . "https://melpa.org/packages/")
+                           ("org" . "https://orgmode.org/elpa")
+                           ("elpag" . "https://elpa.gnu.org/packages/")))
+  (unless (package-installed-p 'use-package)
+    (package-install 'use-package))
+
+  (require 'use-package)
+  (setq use-package-always-ensure t)(if (eq system-type 'darwin)
+                                        (setq mac-option-key-is-meta nil
+                                              mac-command-key-is-meta t
+                                              mac-command-modifier 'meta
+                                              mac-option-modifier 'none)
+                                      )
+
+  (setq auto-window-vscroll nil)
+  ;; (global-display-line-numbers-mode t)
+
+  ;; Don't display welcom page
+  (setq inhibit-startup-message t)
+
+  (menu-bar-mode 0)
+
+  (tool-bar-mode 0)
+
+  (setq backup-directory-alist '(("." . "~/.emacs_saves")))
+
+  ;; auto complete when find file
+  (electric-pair-mode)
+
+  (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+  (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+  (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+
+  (setq column-number-mode t)
+
+  (fset 'yes-or-no-p 'y-or-n-p)
+  (delete-selection-mode 1)
+  ;; Show match parenthesis
+  (show-paren-mode 1)
+
+  ;; Don't display welcom page
+  (setq inhibit-startup-message t)
+
+  ;; Don't insert instructions in the *scratch* buffer
+  (setq initial-scratch-message nil)
+
+  ;; Start at full-screen
+  (add-to-list 'default-frame-alist '(fullscreen . maximized))
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+  (add-to-list 'default-frame-alist '(ns-appearance . dark))
+  (setq ns-use-proxy-icon  nil)
+  (setq frame-title-format nil)
+  (set-face-attribute 'default nil
+                      :family "Fira Code"
+                      :height 130
+                      :weight 'normal
+                      :width 'normal)
+
+
+  (require 'misc)
+  (global-set-key (kbd "M-f") 'forward-to-word)
+  (global-set-key (kbd "M-e") 'forward-word)
+
+  (global-set-key (kbd "C-; C-z") 'toggle-maximize-buffer)
+  (defun toggle-maximize-buffer () "Maximize buffer"
+         (interactive)
+         (if (= 1 (length (window-list)))
+             (jump-to-register '_) 
+           (progn
+             (window-configuration-to-register '_)
+             (delete-other-windows))))
+
+
+  (require 'package)
+  (setq package-archives '(
+                           ("melpa" . "https://melpa.org/packages/")
+                           ("org" . "https://orgmode.org/elpa")
+                           ("elpag" . "https://elpa.gnu.org/packages/")))
+  (package-initialize)
+  (unless (package-installed-p 'use-package)
+    (package-install 'use-package))
+
+  (require 'use-package)
+  (setq use-package-always-ensure t)
+
+  (global-set-key (kbd "C-; b p")  'previous-buffer)
+  (global-set-key (kbd "C-; b n")  'next-buffer)
+  (global-set-key "\M-N" "\C-u1\C-v")
+  (global-set-key "\M-P" "\C-u1\M-v")
+
+  ;; Workaround for copy
+  (setq save-interprogram-paste-before-kill t)
+
+  ;; copy files
+  (setq dired-dwim-target t)
+
+  ;; use spaces over tabs
+  (setq-default indent-tabs-mode nil)
+
+  (defvar my-ediff-last-windows nil)
+
+  (defun my-store-pre-ediff-winconfig ()
+    (setq my-ediff-last-windows (current-window-configuration)))
+
+  (defun my-restore-pre-ediff-winconfig ()
+    (set-window-configuration my-ediff-last-windows))
+
+  (add-hook 'ediff-before-setup-hook #'my-store-pre-ediff-winconfig)
+  (add-hook 'ediff-quit-hook #'my-restore-pre-ediff-winconfig)
+
+  ;; kill buffer after delete
+  (defun delete-file-visited-by-buffer (buffername)
+    "Delete the file visited by the buffer named BUFFERNAME."
+    (interactive "b")
+    (let* ((buffer (get-buffer buffername))
+           (filename (buffer-file-name buffer)))
+      (when filename
+        (delete-file filename)
+        (kill-buffer-ask buffer))))
+
+
+
+  (add-hook 'org-mode-hook (lambda () (org-indent-mode t)))
+  (add-hook 'org-mode-hook #'toggle-truncate-lines)
+
+  (use-package exec-path-from-shell
+    :init
+    (when (memq window-system '(mac ns x))
+      (exec-path-from-shell-initialize))
+    )
+
+#+END_SRC
+
+#+RESULTS:
+
+** General key binding
+#+BEGIN_SRC emacs-lisp
+  (global-unset-key (kbd "C-;"))
+  (global-set-key (kbd "C-; C-v") 'set-mark-command)
+  (global-set-key (kbd "C-; b p")  'previous-buffer)
+  (global-set-key (kbd "C-; b n")  'next-buffer)
+  (global-set-key (kbd "C-; ,")    'rename-buffer)
+  (global-set-key (kbd "C-; C-h") 'windmove-left)
+  (global-set-key (kbd "C-; C-j") 'windmove-down)
+  (global-set-key (kbd "C-; C-k") 'windmove-up)
+  (global-set-key (kbd "C-; C-l") 'windmove-right)
+
+  (drag-stuff-global-mode 1)
+  (drag-stuff-define-keys)
+  (add-hook 'dired-mode-hook 'org-download-enable)
+  (electric-pair-mode)
+#+END_SRC
+
+#+RESULTS:
+: t
+
+* Theme setup
+#+begin_src emacs-lisp
+  (load-theme 'doom-oceanic-next t)
+#+end_src
+
+#+RESULTS:
+: t
+
+* Package setup
+#+BEGIN_SRC emacs-lisp
+  ;; smart M-x
+  (use-package smex)
+
+  (use-package ivy
+    :diminish
+    :bind
+    (("M-o" . swiper-all-thing-at-point)
+     ("M-x" . counsel-M-x)
+     ("C-x C-f" . counsel-find-file)
+     ("C-c M-o" . counsel-multi)
+     :map ivy-minibuffer-map
+     )
+    :init
+    (ivy-mode 1)
+    (bind-key "C-; l" 'counsel-projectile-switch-to-buffer)
+    )
+
+  (use-package counsel
+    :config
+    (global-set-key (kbd "C-; L") 'counsel-ibuffer)
+    ;; show killring
+    (global-set-key (kbd "C-; y") 'counsel-yank-pop)
+    )
+
+  (use-package all-the-icons
+    )
+
+  (use-package doom-modeline
+    :init (doom-modeline-mode 1))
+
+
+  (use-package rainbow-delimiters
+    :hook (my-program-mode-hook . rainbom-delimiters-mode))
+
+  (use-package which-key
+    :init (which-key-mode)
+    :diminish which-key-mode
+    :config
+    (setq which-key-idle-delay 0.3))
+
+
+  (use-package ivy-rich
+    :diminish
+    :config
+    (ivy-rich-mode t))
+
+  (use-package org-bullets
+    :config
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+    )
+
+  ;; Projectile
+  (use-package projectile
+    :init
+    (setq projectile-require-project-root nil)
+    (projectile-mode t)
+    )
+
+  (use-package counsel-projectile
+    :bind
+    (
+     ("C-S-o" . counsel-projectile-switch-project)
+     ("C-; C-f" . counsel-projectile-find-file)
+     )
+    )
+
+  (use-package ag)
+
+  ;; jump
+  (use-package dumb-jump
+    :init
+    (bind-key "C-; ]" 'dumb-jump-go)
+    (bind-key "C-; t" 'dumb-jump-back))
+
+  ;; Show search index
+  (use-package anzu
+    :init
+    (global-anzu-mode +1))
+
+  ;; check syntax
+  (use-package flycheck
+    :init (global-flycheck-mode 1))
+
+  (use-package bm
+    :config
+    (global-set-key (kbd "C-; m m") 'bm-toggle)
+    (global-set-key (kbd "C-; m n")   'bm-next)
+    (global-set-key (kbd "C-; m p") 'bm-previous))
+
+
+  ;; Magit
+  (use-package magit
+    :init
+    (bind-key "C-x g" 'magit-status)
+    (bind-key "C-; d" 'magit-diff-buffer-file))
+
+  (use-package goto-chg
+    :bind
+    (("C-o" . goto-last-change)
+     ("C-i" . goto-last-change-reverse)))
+
+  (use-package avy
+    :init
+    (bind-key "C-; j" 'avy-goto-char))
+
+
+  (use-package ace-window
+    :config
+
+    (global-set-key (kbd "C-x o") 'ace-window)
+    :init
+    (setq aw-dispatch-always t)
+    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+    )
+
+
+  (use-package multiple-cursors
+    :config)
+  ;; (global-set-key (kbd "C-S-<mouse-1>") 'mc/add-cursor-on-click))
+
+
+  ;; Expand selection
+  (use-package expand-region
+    :config
+    (global-set-key (kbd "C-'") 'er/expand-region))
+
+#+END_SRC
+
+#+RESULTS:
+: t
+
+#+BEGIN_SRC emacs-lisp
+
+  ;; indent
+  (use-package dtrt-indent
+    :ensure t
+    :config
+    (dtrt-indent-global-mode t)
+    )
+
+
+  (use-package dired-subtree
+    :config
+    (bind-keys :map dired-mode-map
+               ("i" . dired-subtree-insert)
+               (";" . dired-subtree-remove)))
+
+
+  (use-package dired-git-info
+    :bind (:map dired-mode-map
+                (")" . dired-git-info-mode)))
+
+  ;; attach image to orgmode
+
+  (use-package org-download)
+
+  ;;              :ensure t)
+
+  (use-package avy
+    :ensure t
+    :init
+    (bind-key "C-; j" 'avy-goto-char))
+
+  (use-package js-doc
+    :ensure t
+    :config
+    (add-hook 'js2-mode-hook
+              #'(lambda ()
+                  (define-key js2-mode-map "\C-ci" 'js-doc-insert-function-doc)
+                  (define-key js2-mode-map "@" 'js-doc-insert-tag)))
+    )
+
+  (use-package js2-mode
+    :ensure t
+    :init
+    (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
+
+
+
+  (defun efs/lsp-mode-setup ()
+    (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+    (lsp-headerline-breadcrumb-mode))
+
+  (use-package lsp-mode
+    :commands (lsp lsp-deferred)
+    :hook
+    (lsp-mode . efs/lsp-mode-setup)
+    ((typescript-mode js2-mode web-mode elpy-mode php-mode) . lsp)
+    :init
+    (setq lsp-keymap-prefix "C-c l")
+    :config
+    (lsp-enable-which-key-integration t)
+    (setq gc-cons-threshold 100000000)
+    (setq read-process-output-max (* 1024 1024)) ;; 1mb
+    (setq lsp-completion-provider :capf)
+    :bind
+    (:map lsp-mode-map
+          ("TAB" . completion-at-point))
+    )
+
+  (use-package lsp-ui
+    :hook (lsp-mode . lsp-ui-mode))
+
+  (use-package lsp-ivy)
+
+  (use-package company
+    :after lsp-mode
+    :hook (my-program-mode-hook . company-mode)
+    :bind
+    (:map lsp-mode-map ("<tab>" . company-indent-or-complete-common))
+    (:map company-active-map ("<tab>" . company-complete-selection))
+    (:map company-active-map ("C-n" . company-select-next))
+    (:map company-active-map ("C-p" . company-select-previous))
+    :custom
+    (setq companyminimum-prefix-length 3)
+    (setq company-auto-complete nil)
+    (setq company-idle-delay 0)
+    (setq tab-always-indent 'complete)
+    :config
+    (global-company-mode 1)
+    (define-key company-active-map (kbd "C-n") #'company-select-next)
+    (define-key company-active-map (kbd "C-p") #'company-select-previous))
+
+  (use-package company-box)
+
+  (use-package company
+    :hook (company-mode . company-box-mode))
+
+  ;; (use-package company-web)
+  ;; (add-hook 'after-init-hook 'global-company-mode)
+
+  ;; Magit
+  (use-package magit
+    :ensure t
+    :init
+    (bind-key "C-x g" 'magit-status)
+    (bind-key "C-; d" 'magit-diff-buffer-file))
+
+  (use-package goto-chg
+    :ensure t
+    :init
+    (bind-key "C-o" 'goto-last-change)
+    (bind-key "C-i" 'goto-last-change-reverse))
+
+
+  (use-package ace-window
+    :ensure t
+    :config
+    (global-set-key (kbd "C-x o") 'ace-window)
+    :init
+    (setq aw-dispatch-always t)
+    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+    )
+
+  (use-package git-timemachine
+    :ensure t
+    )
+
+  (use-package multiple-cursors
+    :ensure t
+    :config)
+  ;; (global-set-key (kbd "C-S-<mouse-1>") 'mc/add-cursor-on-click))
+
+
+  (use-package wgrep-ag)
+
+  (use-package editorconfig
+    :config
+    (editorconfig-mode 1))
+
+
+  (use-package typescript-mode
+    :mode "\\.ts\\'"
+    :hook
+    (typescript-mode . lsp-deferred)
+    :config
+    (setq typescript-indent-level 2))
+
+  (use-package tide)
+  (defun setup-tide-mode ()
+    (interactive)
+    (tide-setup)
+    (flycheck-mode +1)
+    (setq flycheck-check-syntax-automatically '(save mode-enabled))
+    (eldoc-mode +1)
+    (tide-hl-identifier-mode +1)
+    ;; company is an optional dependency. You have to
+    ;; install it separately via package-install
+    ;; `M-x package-install [ret] company`
+    (company-mode +1))
+
+  (add-hook 'typescript-mode-hook #'setup-tide-mode)
+
+
+
+  (use-package js2-mode
+    :init
+    (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
+
+
+  (use-package elpy
+    :init
+    ;;  (exec-path-from-shell-initialize)
+    (elpy-enable))
+
+  (use-package drag-stuff
+    :config
+    (drag-stuff-global-mode 1)
+    (drag-stuff-define-keys)
+    (add-hook 'dired-mode-hook 'org-download-enable)
+    )
+
+  (use-package php-mode)
+
+  (use-package web-mode
+    :config
+    (add-to-list 'auto-mode-alist '("\\.vue\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.jsx?$" . web-mode)) ;; auto-enable for .js/.jsx files
+    (add-to-list 'auto-mode-alist '("\\.tsx$" . web-mode)) ;; auto-enable for .js/.jsx files
+    (setq web-mode-code-indent-offset 2)
+    (setq web-mode-attr-indent-offset 2)
+    )
+
+  (use-package smartparens)
+
+
+
+  (defun my-program-mode-hook ()
+    (hs-minor-mode)
+    (local-set-key (kbd "C-+") 'hs-show-all) ;; ctrl+shift+=
+    (local-set-key (kbd "C-_") 'hs-hide-all)   ;; ctrl+shift+-
+    (local-set-key (kbd "C-=") 'hs-show-block)
+    (local-set-key (kbd "C--") 'hs-hide-block)
+    (which-function-mode t)
+    (smartparens-mode t)
+    )
+  (add-hook 'tide-mode 'my-program-mode-hook)
+  (add-hook 'typescript-mode 'my-program-mode-hook)
+  (add-hook 'js-mode-hook 'my-program-mode-hook)
+  (add-hook 'web-mode-hook 'my-program-mode-hook)
+  ;;(add-hook 'vue-mode-hook 'my-program-mode-hook)
+  (setenv "WORKON_HOME" "~/d1/anaconda3/envs")
+  (pyvenv-mode 1)
+
+#+END_SRC
+
+#+RESULTS:
+: t
+
+
+* Program settings
+#+BEGIN_SRC emacs-lisp
+  (defun my-program-mode-hook ()
+    (hs-minor-mode)
+
+    (local-set-key (kbd "C-+") 'hs-show-all) ;; ctrl+shift+=
+    (local-set-key (kbd "C-_") 'hs-hide-all)   ;; ctrl+shift+-
+    (local-set-key (kbd "C-=") 'hs-show-block)
+    (local-set-key (kbd "C--") 'hs-hide-block)
+    (which-function-mode t)
+    (smartparens-mode t)
+    )
+
+  (add-hook 'js-mode-hook 'my-program-mode-hook)
+  (add-hook 'web-mode-hook 'my-program-mode-hook)
+  ;;(add-hook 'vue-mode-hook 'my-program-mode-hook)
+  (add-hook 'php-mode-hook 'my-program-mode-hook)
+  (add-hook 'python-mode-hook 'my-program-mode-hook)
+  (defun setup-tide-mode ()
+    (interactive)
+    (tide-setup)
+    (flycheck-mode +1)
+    (setq flycheck-check-syntax-automatically '(save mode-enabled))
+    (eldoc-mode +1)
+    (tide-hl-identifier-mode +1)
+    ;; company is an optional dependency. You have to
+    ;; install it separately via package-install
+    ;; `M-x package-install [ret] company`
+    (company-mode +1))
+
+  ;; aligns annotation to the right hand side
+  (setq company-tooltip-align-annotations t)
+
+  ;; formats the buffer before saving
+  (add-hook 'before-save-hook 'tide-format-before-save)
+
+  (add-hook 'typescript-mode-hook #'setup-tide-mode)
+#+end_src
+
+#+RESULTS:
+| setup-tide-mode | lsp-deferred | lsp |
 
-     (global-unset-key (kbd "C-;"))
-     (global-set-key (kbd "C-; C-v") 'set-mark-command)
-     (global-set-key (kbd "C-; b p")  'previous-buffer)
-     (global-set-key (kbd "C-; b n")  'next-buffer)
-     (global-set-key (kbd "C-; l")  'helm-buffers-list)
-     (global-set-key (kbd "C-; ,")    'rename-buffer)
-     (global-set-key (kbd "C-; C-h") 'windmove-left)
-     (global-set-key (kbd "C-; C-j") 'windmove-down)
-     (global-set-key (kbd "C-; C-k") 'windmove-up)
-     (global-set-key (kbd "C-; C-l") 'windmove-right)
-     (global-set-key (kbd "C-; ;") 'helm-M-x)
-     (global-set-key (kbd "C-; *") 'forward-same-syntax)
-     (global-set-key (kbd "C-; d") 'mc/mark-next-like-this-word)
 
-
-
-     (global-unset-key (kbd "C-\\"))
-   #+END_SRC
-
-   #+RESULTS:
-
-** Basic setup
-   #+BEGIN_SRC emacs-lisp
-     (setq auto-window-vscroll nil)
-     (global-display-line-numbers-mode t)
-
-     ;; Don't display welcom page
-     (setq inhibit-startup-message t)
-
-     (menu-bar-mode 0)
-
-     (tool-bar-mode 0)
-
-     ;; (set-default-font "Fira Code-14")
-
-     (setq backup-directory-alist '(("." . "~/.emacs_saves")))
-
-     ;; auto complete when find file
-     (ido-mode 1)
-
-     (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-     (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-     (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-
-     (setq column-number-mode t)
-
-     (fset 'yes-or-no-p 'y-or-n-p)
-     ;; Show match parenthesis
-     (show-paren-mode 1)
-
-     ;; Don't display welcom page
-     (setq inhibit-startup-message t)
-
-     ;; Don't insert instructions in the *scratch* buffer
-     (setq initial-scratch-message nil)
-
-     ;; Start at full-screen
-     (add-to-list 'default-frame-alist '(fullscreen . maximized))
-     (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-     (add-to-list 'default-frame-alist '(ns-appearance . dark))
-     (setq ns-use-proxy-icon  nil)
-     (setq frame-title-format nil)
-
-     ;; toggle buffer maximize
-     (global-set-key (kbd "C-; z") 'toggle-maximize-buffer)
-     (defun toggle-maximize-buffer () "Maximize buffer"
-            (interactive)
-            (if (= 1 (length (window-list)))
-                (jump-to-register '_) 
-              (progn
-                (window-configuration-to-register '_)
-                (delete-other-windows))))
-
-     ;; default workdir
-     (setq default-directory "~/d1/Documents/workspace/")
-
-     ;; Paste with replace
-     (delete-selection-mode 1)
-
-     ;; Fix foward-to-word function
-     (require 'misc)
-     (global-set-key (kbd "M-f") 'forward-to-word)
-     (global-set-key (kbd "M-e") 'forward-word)
-
-     ;; Scroll buffer
-     (global-set-key "\M-N" "\C-u1\C-v")
-     (global-set-key "\M-P" "\C-u1\M-v")
-
-
-     ;; Workaround for copy
-     (setq save-interprogram-paste-before-kill t)
-
-     ;; show killring
-     (global-set-key (kbd "C-; y") 'helm-show-kill-ring)
-
-     ;; copy files
-     (setq dired-dwim-target t)
-
-     ;; use spaces over tabs
-     (setq-default indent-tabs-mode nil)
-
-     (defvar my-ediff-last-windows nil)
-
-     (defun my-store-pre-ediff-winconfig ()
-       (setq my-ediff-last-windows (current-window-configuration)))
-
-     (defun my-restore-pre-ediff-winconfig ()
-       (set-window-configuration my-ediff-last-windows))
-
-     (add-hook 'ediff-before-setup-hook #'my-store-pre-ediff-winconfig)
-     (add-hook 'ediff-quit-hook #'my-restore-pre-ediff-winconfig)
-
-     ;; kill buffer after delete
-     (defun delete-file-visited-by-buffer (buffername)
-       "Delete the file visited by the buffer named BUFFERNAME."
-       (interactive "b")
-       (let* ((buffer (get-buffer buffername))
-              (filename (buffer-file-name buffer)))
-         (when filename
-           (delete-file filename)
-           (kill-buffer-ask buffer))))
-
-   #+END_SRC
-   #+RESULTS:
-   : delete-file-visited-by-buffer
-
-** Theme
-   #+BEGIN_SRC emacs-lisp
-     ;;(add-to-list 'custom-theme-load-path "~/.emacs.d/color-theme/themes/")
-     (load-theme 'leuven t)
-     (enable-theme 'leuven)
-   #+END_SRC
-
-   #+RESULTS:
-** Package 
-   #+BEGIN_SRC emacs-lisp
-     (require 'package)
-     (setq package-archives nil)
-     (when (< emacs-major-version 27)
-       (package-initialize))
-
-     (setq package-archives '(("gnu"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-                              ("melpa" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
-     (setq package-archives
-           (append '(("melpa" . "http://melpa.milkbox.net/packages/"))
-                   package-archives))
-
-     ;;(package-refresh-contents)
-
-
-   #+END_SRC
-   #+RESULTS:
-   : ((melpa . http://melpa.milkbox.net/packages/) (gnu . http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/) (melpa . http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/))
-
-** Packages install
-   #+BEGIN_SRC emacs-lisp
-     (setq org-src-tab-acts-natively t)
-     (use-package org-bullets
-       :ensure t
-       :config
-       (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
-       )
-
-     ;; Projectile
-     (use-package projectile
-       :ensure t
-       :init
-       (setq projectile-require-project-root nil)
-       (projectile-mode t)
-       )
-
-     (use-package ag
-       :ensure t)
-
-     (use-package helm
-       :ensure t
-       :init
-       (setq helm-M-x-fuzzy-match t
-             helm-mode-fuzzy-match t
-             helm-buffers-fuzzy-matching t
-             helm-recentf-fuzzy-match t
-             helm-locate-fuzzy-match t
-             helm-semantic-fuzzy-match t
-             helm-imenu-fuzzy-match t
-             helm-completion-in-region-fuzzy-match t
-             helm-candidate-number-list 150  
-             helm-move-to-line-cycle-in-source t
-             helm-echo-input-in-header-line t
-             helm-autoresize-max-height 0
-             helm-autoresize-min-height 50
-             )
-       (bind-key "M-x" 'helm-M-x)
-       (bind-key "C-; ;" 'helm-M-x)
-       (bind-key "C-; L" 'helm-buffers-list)
-       :config
-       (helm-mode 1))
-
-     (use-package helm-projectile
-       :ensure t
-       :requires (ag)
-       :init
-       (bind-key "C-; C-f" 'helm-projectile-find-file)
-       (bind-key "C-x C-f" 'helm-find-files)
-       (bind-key "C-; l"  'helm-projectile-switch-to-buffer)
-       (bind-key "C-S-o" 'helm-projectile-switch-project)
-       )
-     ;; jump
-     (use-package dumb-jump
-       :ensure t
-       :init
-       (bind-key "C-; ]" 'dumb-jump-go)
-       (bind-key "C-; t" 'dumb-jump-back))
-
-     ;; Find char in-line
-     (use-package iy-go-to-char
-       :ensure t
-       :init
-       (bind-key "C-; f" 'iy-go-to-char)
-       (bind-key "C-; F" 'iy-go-to-char-backward)
-       (bind-key "C-; ;" 'iy-go-to-or-up-to-continue)
-       (bind-key "C-; ," 'iy-go-to-or-up-to-continue-backward))
-
-     ;; Show search index
-     (use-package anzu
-       :ensure t
-       :init
-       (global-anzu-mode +1))
-
-     ;; check syntax
-     (use-package flycheck
-       :ensure t
-       :init (global-flycheck-mode))
-     ;; tabbar
-     (use-package centaur-tabs
-       :ensure t
-       :demand
-       :config
-       ;;(centaur-tabs-mode t)
-       (centaur-tabs-headline-match)
-       :init
-       (setq centaur-tabs-set-icons t)
-       (setq centaur-tabs-gray-out-icons 'buffer)
-       (setq centaur-tabs-set-bar 'over)
-       (setq centaur-tabs-height 20)
-       (setq centaur-tabs-modified-marker "*")
-       :config
-       (centaur-tabs-enable-buffer-reordering)
-       (setq centaur-tabs-adjust-buffer-order 'right)
-       :bind
-       ("C-<prior>" . centaur-tabs-backward)
-       ("C-<next>" . centaur-tabs-forward))
-
-     (use-package bm
-       :ensure t
-       :config
-       (global-set-key (kbd "C-; m m") 'bm-toggle)
-       (global-set-key (kbd "C-; m n")   'bm-next)
-       (global-set-key (kbd "C-; m p") 'bm-previous))
-     ;; Company
-     (use-package company
-       :ensure t
-       :init
-       (setq companyminimum-prefix-length 3)
-       (setq company-auto-complete nil)
-       (setq company-idle-delay 0)
-       (setq tab-always-indent 'complete)
-       :config
-       (global-company-mode 1)
-       (define-key company-active-map (kbd "C-n") #'company-select-next)
-       (define-key company-active-map (kbd "C-p") #'company-select-previous))
-
-     ;; Magit
-     (use-package magit
-       :ensure t
-       :init
-       (bind-key "C-x g" 'magit-status)
-       (bind-key "C-; d" 'magit-diff-buffer-file))
-
-     (use-package goto-chg
-       :ensure t
-       :init
-       (bind-key "C-o" 'goto-last-change)
-       (bind-key "C-i" 'goto-last-change-reverse))
-
-     (use-package helm-swoop
-       :bind
-       (("M-o" . helm-swoop)
-        ("M-O" . helm-swoop-back-to-last-point)
-        ("C-c M-o" . helm-multi-swoop)
-        ;; ("C-c M-O" . helm-multi-swoop-all)
-        )
-       :config
-       (global-set-key (kbd "M-i") 'helm-swoop)
-       (global-set-key (kbd "M-I") 'helm-swoop-back-to-last-point)
-       ;; When doing isearch, hand the word over to helm-swoop
-       (define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch)
-       ;; Move up and down like isearch
-       (define-key helm-swoop-map (kbd "C-r") 'helm-previous-line)
-       (define-key helm-swoop-map (kbd "C-s") 'helm-next-line)
-       ;; Save buffer when helm-multi-swoop-edit complete
-       (setq helm-multi-swoop-edit-save t)
-
-       ;; If this value is t, split window inside the current window
-       (setq helm-swoop-split-with-multiple-windows nil)
-
-       ;; Split direcion. 'split-window-vertically or 'split-window-horizontally
-       (setq helm-swoop-split-direction 'split-window-horizontally)
-       ;; If you prefer fuzzy matching
-       (setq helm-swoop-use-fuzzy-match t)
-       )
-
-     (use-package ace-window
-       :ensure t
-       :config
-       (global-set-key (kbd "C-x o") 'ace-window)
-       :init
-       (setq aw-dispatch-always t)
-       (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-       )
-
-     (use-package git-timemachine
-       :ensure t
-       )
-
-     (use-package multiple-cursors
-       :ensure t
-       :config)
-     ;; (global-set-key (kbd "C-S-<mouse-1>") 'mc/add-cursor-on-click))
-
-
-     ;; Expand selection
-     (use-package expand-region
-       :ensure t
-       :config
-       (global-set-key (kbd "C-'") 'er/expand-region))
-
-
-     ;; indent
-     (use-package dtrt-indent
-       :ensure t
-       :config
-       (dtrt-indent-global-mode t)
-       )
-
-     ;; (golden-ratio-mode 1)
-
-
-     (use-package dired-subtree
-       :ensure t
-       :config
-       (bind-keys :map dired-mode-map
-                  ("i" . dired-subtree-insert)
-                  (";" . dired-subtree-remove)))
-
-     ;; attach image to orgmode
-
-     ;; (use-package 'org-download
-     ;;              :ensure t)
-
-
-     (use-package dired-git-info
-       :ensure t
-       :bind (:map dired-mode-map
-                   (")" . dired-git-info-mode)))
-
-     (use-package avy
-       :ensure t
-       :init
-       (bind-key "C-; j" 'avy-goto-char))
-
-     (use-package js-doc
-       :ensure t
-       :config
-       (setq js-doc-mail-address "sonnh@pique.ai"
-             js-doc-author (format "SonNH <%s>" js-doc-mail-address)
-             js-doc-url "pique.ai"
-             js-doc-license "")
-
-       (add-hook 'js2-mode-hook
-                 #'(lambda ()
-                     (define-key js2-mode-map "\C-ci" 'js-doc-insert-function-doc)
-                     (define-key js2-mode-map "@" 'js-doc-insert-tag)))
-       )
-
-     (use-package js2-mode
-       :ensure t
-       :init
-       (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
-
-     ;; (use-package vue-mode
-     ;;   :ensure t
-     ;;   :init
-     ;;   (dtrt-indent-mode t)
-     ;;   (electric-pair-mode)
-     ;;   )
-
-     ;; (use-package vue-html-mode
-     ;;   :ensure t)
-
-
-     (use-package elpy
-       :ensure t
-       :init
-       ;;  (exec-path-from-shell-initialize)
-       (elpy-enable))
-
-     (use-package tide
-       :ensure t)
-
-     (use-package drag-stuff
-       :ensure t
-       :init
-       (drag-stuff-global-mode 1)
-       (drag-stuff-define-keys)
-       (add-hook 'dired-mode-hook 'org-download-enable)
-       )
-
-     (use-package php-mode
-       :ensure t)
-
-     (use-package web-mode
-       :ensure t
-       :config
-       (add-to-list 'auto-mode-alist '("\\.vue\\'" . web-mode))
-       (setq web-mode-code-indent-offset 2)
-       (setq web-mode-attr-indent-offset 2)
-       )
-
-     (use-package smartparens
-       :ensure t)
-
-
-   #+END_SRC
-
-   #+RESULTS:
-
-** Package settings
-   #+BEGIN_SRC emacs-lisp
-     ;; Drag-and-drop to `dired`
-     (drag-stuff-global-mode 1)
-     (drag-stuff-define-keys)
-     (add-hook 'dired-mode-hook 'org-download-enable)
-     (electric-pair-mode)
-
-   #+END_SRC
-
-   #+RESULTS:
-   : t
-
-** Program settings
-   #+BEGIN_SRC emacs-lisp
-     (defun my-program-mode-hook ()
-       (hs-minor-mode)
-
-       (local-set-key (kbd "C-+") 'hs-show-all) ;; ctrl+shift+=
-       (local-set-key (kbd "C-_") 'hs-hide-all)   ;; ctrl+shift+-
-       (local-set-key (kbd "C-=") 'hs-show-block)
-       (local-set-key (kbd "C--") 'hs-hide-block)
-       (which-function-mode t)
-       (smartparens-mode t)
-       )
-
-     (add-hook 'js-mode-hook 'my-program-mode-hook)
-     (add-hook 'web-mode-hook 'my-program-mode-hook)
-     ;;(add-hook 'vue-mode-hook 'my-program-mode-hook)
-     (add-hook 'php-mode-hook 'my-program-mode-hook)
-     (add-hook 'python-mode-hook 'my-program-mode-hook)
-     (defun setup-tide-mode ()
-       (interactive)
-       (tide-setup)
-       (flycheck-mode +1)
-       (setq flycheck-check-syntax-automatically '(save mode-enabled))
-       (eldoc-mode +1)
-       (tide-hl-identifier-mode +1)
-       ;; company is an optional dependency. You have to
-       ;; install it separately via package-install
-       ;; `M-x package-install [ret] company`
-       (company-mode +1))
-
-     ;; aligns annotation to the right hand side
-     (setq company-tooltip-align-annotations t)
-
-     ;; formats the buffer before saving
-     (add-hook 'before-save-hook 'tide-format-before-save)
-
-     (add-hook 'typescript-mode-hook #'setup-tide-mode)
-
-   #+END_SRC
-
-   #+RESULTS:
-   | lambda | nil | (setq syntax-ppss-table nil) |
