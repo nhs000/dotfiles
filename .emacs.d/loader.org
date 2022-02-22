@@ -621,10 +621,28 @@
 
 
   (use-package lsp-pyright
-  :ensure t
-  :hook (python-mode . (lambda ()
-                          (require 'lsp-pyright)
-                          (lsp-deferred))))
+    :ensure t
+    :hook (python-mode . (lambda ()
+                           (require 'lsp-pyright)
+                           (lsp-deferred))))
+
+  (use-package conda
+    :ensure t
+    :config
+    (setq conda-env-home-directory (expand-file-name "~/miniconda3/"))
+    (setq conda-anaconda-home (expand-file-name "~/miniconda3/"))
+
+    ;; if you want interactive shell support, include:
+    (conda-env-initialize-interactive-shells)
+    ;; if you want eshell support, include:
+    (conda-env-initialize-eshell)
+    ;; if you want auto-activation (see below for details), include:
+    (conda-env-autoactivate-mode t)
+    ;; if you want to automatically activate a conda environment on the opening of a file:
+    ;; (add-to-hook 'find-file-hook (lambda () (when (bound-and-true-p conda-project-env-path)
+    ;; (conda-env-activate-for-buffer))))
+  )
+
    #+end_src
 
 #+RESULTS:
