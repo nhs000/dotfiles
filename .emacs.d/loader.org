@@ -161,6 +161,8 @@
 * Theme setup
 #+begin_src emacs-lisp
   ;; (load-theme 'doom-oceanic-next t)
+(use-package doom-themes
+:ensure t)
 (load-theme 'doom-monokai-pro t)
 #+end_src
 
@@ -170,6 +172,9 @@
 * Package setup
 #+BEGIN_SRC emacs-lisp
 
+(use-package drag-stuff
+:ensure t
+)
   (use-package dashboard
     :ensure t
     :config
@@ -215,6 +220,7 @@
     )
 
   (use-package all-the-icons
+:ensure t
     )
 
   (use-package doom-modeline
