@@ -172,9 +172,9 @@
 * Package setup
 #+BEGIN_SRC emacs-lisp
 
-(use-package drag-stuff
-:ensure t
-)
+  (use-package drag-stuff
+    :ensure t
+    )
   (use-package dashboard
     :ensure t
     :config
@@ -220,7 +220,7 @@
     )
 
   (use-package all-the-icons
-:ensure t
+    :ensure t
     )
 
   (use-package doom-modeline
@@ -660,6 +660,12 @@
     (python-mode . blacken-mode)
     :config
     )
+
+  (use-package py-isort
+    :ensure t
+    :after python
+    :hook ((python-mode . pyvenv-mode)
+           (before-save . py-isort-before-save)))
 
   ;; (use-package conda
   ;;   :ensure t
