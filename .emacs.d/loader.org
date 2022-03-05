@@ -177,7 +177,8 @@
 
 * Package setup
 #+BEGIN_SRC emacs-lisp
-
+(use-package fzf
+:ensure t)
   (use-package drag-stuff
     :ensure t
     )
@@ -402,8 +403,8 @@
             ("TAB" . completion-at-point))
       )
 
-    (use-package lsp-ui
-      :hook (lsp-mode . lsp-ui-mode))
+    ;;(use-package lsp-ui
+     ;; :hook (lsp-mode . lsp-ui-mode))
 
     (use-package lsp-ivy)
 
@@ -690,7 +691,7 @@
   ;; (conda-env-activate-for-buffer))))
   ;; )
 
-   #+end_src
+#+end_src
 
 #+RESULTS:
 : ((python utf-8 . utf-8))
