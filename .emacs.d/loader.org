@@ -164,7 +164,7 @@
   ;; (load-theme 'doom-oceanic-next t)
 (use-package doom-themes
 :ensure t)
-(load-theme 'doom-monokai-pro t)
+(load-theme 'doom-ir-black t)
 #+end_src
 
 #+RESULTS:
