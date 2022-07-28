@@ -325,6 +325,10 @@
     :config
     (global-set-key (kbd "C-'") 'er/expand-region))
 
+(use-package neotree
+:config
+(global-set-key (kbd "C-; n") 'neotree-toggle)
+)
 #+END_SRC
 
 #+RESULTS:
