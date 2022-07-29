@@ -114,7 +114,8 @@ hc mousebind $Mod-Button3 resize
 hc keybind $Mod-BackSpace   cycle_monitor
 hc keybind $Mod-c         cycle_all +1
 hc keybind $Mod-Shift-x   cycle_all -1
-hc keybind $Mod-Tab cycle
+hc keybind $Mod-Tab cycle +1
+hc keybind $Mod-Shift-Tab cycle -1
 hc keybind $Mod-i jumpto urgent
 
 # theme
