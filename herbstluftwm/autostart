@@ -8,8 +8,31 @@ hc() {
 
 hc emit_hook reload
 
-#xsetroot -solid '#5A8E3A'
-feh --bg-fill ~/Downloads/wallpapers
+# rotate left screen
+xrandr --output HDMI-1 --rotate left
+
+# polybar multiple screens
+if type "xrandr"; then
+  for m in $(xrandr --query | grep " connected" | cut -d" " -f1); do
+    MONITOR=$m polybar --reload example &
+  done
+else
+  polybar --reload example &
+fi
+polybar > /dev/null 2>&1 &
+
+# start ibus unikey 
+ibus-daemon --xim > /dev/null 2>&1 &
+###
+
+### setup wallpapers
+#xsetroot -solid '#F2DEBA'
+screen_size=$(xrandr | grep ' connected' | awk '{print $3}' | cut -f1 -d"+")
+
+IFS=$'\n'
+readarray -t <<<"$screen_size"
+feh --bg-fill ~/wallpapers/"${MAPFILE[0]}".jpg ~/wallpapers/"${MAPFILE[1]}".jpg
+#exec feh --bg-scale ~/Downloads/wallpapers/lukasz-szmigiel-8AdYB7M4OHY-unsplash.jpg
 
 # remove all existing keybindings
 hc keyunbind --all
@@ -61,23 +84,23 @@ hc keybind $Mod-Control-k       resize up +$resizestep
 hc keybind $Mod-Control-l       resize right +$resizestep
 hc keybind $Mod-Control-Left    resize left +$resizestep
 hc keybind $Mod-Control-Down    resize down +$resizestep
-rc keybind $Mod-Control-Up      resize up +$resizestep
+hc keybind $Mod-Control-Up      resize up +$resizestep
 hc keybind $Mod-Control-Right   resize right +$resizestep
 
-mkdir -p $HOME/screenshots
+mkdir -p $HOME/Documents/screenshots
 hc keybind Print spawn scrot 'screenshots/%Y-%m-%d_%H-%M-%S_$wx$h.png' --exec 'notify-send --expire-time=2000 "Fullscreen Screenshot Saved."'
 hc keybind $Mod-Print spawn scrot 'screenshots/%Y-%m-%d_%H-%M-%S_$wx$h.png' --focused --exec 'notify-send --expire-time=2000 "Window screenshot Saved."'
-hc keybind $Mod-Ctrl-Print spawn scrot 'screenshots/%Y-%m-%d_%H-%M-%S_$wx$h.png' --select --exec 'notify-send --expire-time=2000 "Area Screenshot Saved."'
+hc keybind $Mod-Shift-Print spawn scrot 'screenshots/%Y-%m-%d_%H-%M-%S_$wx$h.png' --select --exec 'notify-send --expire-time=2000 "Area Screenshot Saved."'
 
 # tags
 tag_names=( {1..9} )
 tag_keys=( {1..9} 0 )
 
 hc rename default "${tag_names[0]}" || true
-for i in ${!tag_names[@]} ; do
+for i in "${!tag_names[@]}" ; do
     hc add "${tag_names[$i]}"
     key="${tag_keys[$i]}"
-    if ! [ -z "$key" ] ; then
+    if [ -n "$key" ] ; then
         hc keybind "$Mod-$key" use_index "$i"
         hc keybind "$Mod-Shift-$key" move_index "$i"
     fi
@@ -110,7 +133,10 @@ hc mousebind $Mod-Button1 move
 hc mousebind $Mod-Button2 zoom
 hc mousebind $Mod-Button3 resize
 
-# focus
+
+
+
+
 hc keybind $Mod-BackSpace   cycle_monitor
 hc keybind $Mod-c         cycle_all +1
 hc keybind $Mod-Shift-x   cycle_all -1
@@ -124,7 +150,7 @@ hc attr theme.floating.reset 1
 hc set frame_border_active_color '#222222'
 hc set frame_border_normal_color '#101010'
 hc set frame_bg_normal_color '#565656'
-hc set frame_bg_active_color '#345F0C'
+hc set frame_bg_active_color '#32302f'
 hc set frame_border_width 1
 hc set show_frame_decorations 'focused_if_multiple'
 hc set frame_bg_transparent on
@@ -135,14 +161,15 @@ hc attr theme.title_height 15
 hc attr theme.title_when always
 # hc attr theme.title_font '-*-fixed-medium-r-*-*-13-*-*-*-*-*-*-*'
 hc attr theme.title_depth 3  # space below the title's baseline
-hc attr theme.active.color '#345F0C'
-hc attr theme.title_color '#ffffff'
+hc attr theme.active.color '#af3a03'
+hc attr theme.title_color '#f9f5d7'
+
 hc attr theme.normal.color '#323232'
 hc attr theme.urgent.color '#7811A1'
 hc attr theme.tab_color '#1F1F1F'
-hc attr theme.active.tab_color '#2B4F0A'
+hc attr theme.active.tab_color '#282828'
+hc attr theme.active.tab_title_color '#f9f5d7'
 hc attr theme.active.tab_outer_color '#6C8257'
-hc attr theme.active.tab_title_color '#ababab'
 hc attr theme.normal.title_color '#898989'
 hc attr theme.inner_width 1
 hc attr theme.inner_color black
@@ -171,12 +198,14 @@ hc set mouse_recenter_gap 0
 hc unrule -F
 #hc rule class=XTerm tag=3 # move all xterms to tag 3
 hc rule focus=on # normally focus new clients
+hc rule floatplacement=smart
 #hc rule focus=off # normally do not focus new clients
 # give focus to most common terminals
 #hc rule class~'(.*[Rr]xvt.*|.*[Tt]erm|Konsole)' focus=on
-hc rule windowtype~'_NET_WM_WINDOW_TYPE_(DIALOG|UTILITY|SPLASH)' pseudotile=on
+hc rule windowtype~'_NET_WM_WINDOW_TYPE_(DIALOG|UTILITY|SPLASH)' floating=on
 hc rule windowtype='_NET_WM_WINDOW_TYPE_DIALOG' focus=on
 hc rule windowtype~'_NET_WM_WINDOW_TYPE_(NOTIFICATION|DOCK|DESKTOP)' manage=off
+hc rule fixedsize floating=on
 
 hc set tree_style '╾│ ├└╼─┐'
 
@@ -191,7 +220,36 @@ hc detect_monitors
 # find the panel
 panel=~/.config/herbstluftwm/panel.sh
 [ -x "$panel" ] || panel=/etc/xdg/herbstluftwm/panel.sh
-for monitor in $(herbstclient list_monitors | cut -d: -f1) ; do
+for monitor in $(hc list_monitors | cut -d: -f1) ; do
     # start it on each monitor
-    "$panel" $monitor &
+    "$panel" "$monitor" &
 done
+
+
+hc keybind $Mod-Shift-p substitute LASTWIN my_lastwin jumpto LASTWIN
+
+init_focuslastwindow=(
+  chain
+    , emit_hook quit_focuslastwindow
+    , silent try new_attr string my_lastwin
+    , silent try new_attr string my_curwin
+    , and ,, silent attr clients.focus
+          ,, substitute WIN clients.focus.winid set_attr my_curwin WIN
+          ,, substitute WIN clients.focus.winid set_attr my_lastwin WIN
+)
+
+hc "${init_focuslastwindow[@]}"
+
+hc -i '(focus_changed|reload|quit_focuslastwindow)' | \
+    while read h winid t ; do
+        case "$h" in
+            focus_changed)
+                [[ "$winid" != "0x0" ]] && \
+                hc and \
+                    , substitute WIN my_curwin set_attr my_lastwin WIN \
+                    , set_attr my_curwin "$winid"
+                ;;
+            *)  
+              break ;;
+        esac
+    done

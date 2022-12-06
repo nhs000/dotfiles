@@ -134,6 +134,8 @@
       (exec-path-from-shell-initialize))
     )
 
+
+  (setq-default frame-title-format '(buffer-file-name "%f" "%b"))
 #+END_SRC
 
 #+RESULTS:
@@ -209,11 +211,14 @@
     :init
     (ivy-mode 1)
     (bind-key "C-; l" 'counsel-projectile-switch-to-buffer)
+    (setq ivy-re-builders-alist
+      '((ivy-switch-buffer . ivy--regex-plus)
+        (t . ivy--regex-fuzzy)))
     )
 
   (use-package ivy-posframe
     :init
-    (ivy-posframe-mode 1))
+    (ivy-posframe-mode 0))
 
   (use-package counsel
     :config
@@ -578,8 +583,7 @@
 #+RESULTS:
 : t
 
-
-* Program settings
+* Developer settings
 #+BEGIN_SRC emacs-lisp
   (defun my-program-mode-hook ()
     (hs-minor-mode)
@@ -623,6 +627,9 @@
   ;; formats the buffer before saving
   (add-hook 'before-save-hook 'tide-format-before-save)
   (add-hook 'typescript-mode-hook #'setup-tide-mode)
+
+  (add-hook 'go-mode-hook #'lsp-deferred)
+  (add-hook 'go-mode-hook #'yas-minor-mode)
 #+end_src
 
 #+RESULTS:
@@ -700,3 +707,20 @@
 
 #+RESULTS:
 : ((python utf-8 . utf-8))
+
+*** Golang setup
+#+begin_src emacs-lisp
+(use-package go-mode)
+(add-hook 'go-mode-hook
+  (lambda ()
+    (setq-default)
+    (setq tab-width 2)
+    (setq standard-indent 2)
+    (setq indent-tabs-mode nil)))
+#+end_src
+
+*** CPP setup
+#+begin_src emacs-lisp
+  (use-package gtags-mode)
+  (use-package counsel-gtags)
+#+end_src
