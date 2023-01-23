@@ -340,16 +340,6 @@
     (bind-key "C-; j" 'avy-goto-char))
 
 
-  (use-package ace-window
-    :config
-
-    (global-set-key (kbd "C-; o") 'ace-window)
-    :init
-    (setq aw-dispatch-always nil)
-    (setq aw-keys '(?a ?b ?c ?d ?e ?f ?g ?h ?k))
-    (setq aw-ignore-current t))
-
-
   (use-package multiple-cursors
     :config)
   ;; (global-set-key (kbd "C-S-<mouse-1>") 'mc/add-cursor-on-click))
@@ -370,7 +360,7 @@
 : t
 
 #+BEGIN_SRC emacs-lisp
-  
+
   ;; indent
   (use-package dtrt-indent
     :ensure t
@@ -486,16 +476,6 @@
     :init
     (bind-key "C-o" 'goto-last-change)
     (bind-key "C-i" 'goto-last-change-reverse))
-
-
-  (use-package ace-window
-    :ensure t
-    :config
-    (global-set-key (kbd "C-x o") 'ace-window)
-    :init
-    (setq aw-dispatch-always t)
-    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-    )
 
   (use-package git-timemachine
     :ensure t
@@ -667,8 +647,9 @@
     :config
     (global-set-key (kbd "C-x o") 'ace-window)
     :init
-    (setq aw-dispatch-always t)
-    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+    (setq aw-dispatch-always nil)
+    (setq aw-ignore-current t)
+    (setq aw-keys '(?a ?b ?c ?d ?e ?f ?g ?h ?k))
     )
 
   (use-package git-timemachine
