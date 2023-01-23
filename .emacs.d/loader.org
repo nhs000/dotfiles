@@ -75,6 +75,7 @@
   (global-set-key (kbd "M-e") 'forward-word)
 
   (global-set-key (kbd "C-; C-z") 'toggle-maximize-buffer)
+
   (defun toggle-maximize-buffer () "Maximize buffer"
          (interactive)
          (if (= 1 (length (window-list)))
@@ -93,8 +94,8 @@
 
   ;;(global-set-key (kbd "C-; j")  'previous-buffer)
   ;;(global-set-key (kbd "C-; k")  'next-buffer)
-  (global-set-key "\M-N" "\C-u1\C-v")
-  (global-set-key "\M-P" "\C-u1\M-v")
+  (global-set-key "\M-N" "\C-u5\C-v")
+  (global-set-key "\M-P" "\C-u5\M-v")
 
   ;; Workaround for copy
   (setq save-interprogram-paste-before-kill t)
@@ -428,8 +429,40 @@
           ("TAB" . completion-at-point))
     )
 
-  ;;(use-package lsp-ui
-  ;; :hook (lsp-mode . lsp-ui-mode))
+  (use-package lsp-ui
+    :hook (lsp-mode . lsp-ui-mode)
+    :init
+    (bind-key "C-; e l" 'lsp-ui-flycheck-list)
+    :config
+    (defun lsp-ui-sideline--window-width ()
+      (- (window-max-chars-per-line)
+         (lsp-ui-sideline--margin-width)
+         (or (and (>= emacs-major-version 27)
+                  ;; We still need this number when calculating available space
+                  ;; even with emacs >= 27
+                  (lsp-ui-util-line-number-display-width))
+             0)))
+
+    (defun lsp-ui-sideline--display-all-info (list-infos tag bol eol)
+      (when (and (lsp-ui-sideline--valid-tag-p tag 'line)
+                 (not (lsp-ui-sideline--stop-p)))
+        (let ((inhibit-modification-hooks t)
+              (win-width (lsp-ui-sideline--window-width))
+              ;; sort by bounds
+              (list-infos (--sort (< (caadr it) (caadr other)) list-infos)))
+          (lsp-ui-sideline--delete-kind 'info)
+          (--each list-infos
+            (-let (((symbol bounds info) it))
+              (lsp-ui-sideline--push-info win-width symbol bounds info bol eol))))))
+
+    (defun lsp-ui-sideline--align (&rest lengths)
+      (list (* (window-font-width)
+               (+ (apply '+ lengths) (if (display-graphic-p) 1 2)))))
+    )
+
+  (use-package lsp-ivy)
+
+
 
   (use-package lsp-ivy)
 
@@ -572,35 +605,6 @@
     :ensure t
     :init
     (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
-
-
-
-  (defun efs/lsp-mode-setup ()
-    (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-    (lsp-headerline-breadcrumb-mode))
-
-  (use-package lsp-mode
-    :commands (lsp lsp-deferred)
-    :hook
-    (lsp-mode . efs/lsp-mode-setup)
-    ((typescript-mode js2-mode web-mode php-mode) . lsp)
-    :init
-    (setq lsp-keymap-prefix "C-c l")
-    (setq +format-with-lsp nil)
-    :config
-    (lsp-enable-which-key-integration t)
-    (setq gc-cons-threshold 100000000)
-    (setq read-process-output-max (* 1024 1024)) ;; 1mb
-    (setq lsp-completion-provider :capf)
-    :bind
-    (:map lsp-mode-map
-          ("TAB" . completion-at-point))
-    )
-
-  (use-package lsp-ui
-    :hook (lsp-mode . lsp-ui-mode))
-
-  (use-package lsp-ivy)
 
   (use-package company
     :after lsp-mode
