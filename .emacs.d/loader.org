@@ -9,7 +9,7 @@
   (package-initialize)
 
   (unless package-archive-contents
-  (package-refresh-contents))
+    (package-refresh-contents))
 
   (package-install 'use-package)
   (require 'use-package)
@@ -17,17 +17,17 @@
   (setq use-package-always-ensure t)
 
   (if (eq system-type 'darwin)
-                                        (setq mac-option-key-is-meta nil
-                                              mac-command-key-is-meta t
-                                              mac-command-modifier 'meta
-                                              mac-option-modifier 'none)
-                                      )
-(setq auto-window-vscroll nil)
+      (setq mac-option-key-is-meta nil
+            mac-command-key-is-meta t
+            mac-command-modifier 'meta
+            mac-option-modifier 'none)
+    )
+  (setq auto-window-vscroll nil)
   ;; (global-display-line-numbers-mode t)
 
   ;; Don't display welcom page
   (setq inhibit-startup-message t)
-(setq ring-bell-function 'ignore)
+  (setq ring-bell-function 'ignore)
   (menu-bar-mode 0)
 
   (tool-bar-mode 0)
@@ -47,6 +47,9 @@
   (delete-selection-mode 1)
   ;; Show match parenthesis
   (show-paren-mode 1)
+
+  ;; Enable tab-bar-mode
+  (tab-bar-mode 1)
 
   ;; Don't display welcom page
   (setq inhibit-startup-message t)
@@ -136,6 +139,7 @@
 
 
   (setq-default frame-title-format '(buffer-file-name "%f" "%b"))
+
 #+END_SRC
 
 #+RESULTS:
@@ -164,9 +168,9 @@
 * Theme setup
 #+begin_src emacs-lisp
   ;; (load-theme 'doom-oceanic-next t)
-(use-package doom-themes
-:ensure t)
-(load-theme 'doom-ir-black t)
+  (use-package doom-themes
+    :ensure t)
+  (load-theme 'doom-ir-black t)
 #+end_src
 
 #+RESULTS:
@@ -174,8 +178,8 @@
 
 * Package setup
 #+BEGIN_SRC emacs-lisp
-(use-package fzf
-:ensure t)
+  (use-package fzf
+    :ensure t)
   (use-package drag-stuff
     :ensure t
     )
@@ -212,8 +216,8 @@
     (ivy-mode 1)
     (bind-key "C-; l" 'counsel-projectile-switch-to-buffer)
     (setq ivy-re-builders-alist
-      '((ivy-switch-buffer . ivy--regex-plus)
-        (t . ivy--regex-fuzzy)))
+          '((ivy-switch-buffer . ivy--regex-plus)
+            (t . ivy--regex-fuzzy)))
     )
 
   (use-package ivy-posframe
@@ -313,11 +317,11 @@
   (use-package ace-window
     :config
 
-    (global-set-key (kbd "C-x o") 'ace-window)
+    (global-set-key (kbd "C-; o") 'ace-window)
     :init
-    (setq aw-dispatch-always t)
-    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-    )
+    (setq aw-dispatch-always nil)
+    (setq aw-keys '(?a ?b ?c ?d ?e ?f ?g ?h ?k))
+    (setq aw-ignore-current t))
 
 
   (use-package multiple-cursors
@@ -330,409 +334,409 @@
     :config
     (global-set-key (kbd "C-'") 'er/expand-region))
 
-(use-package neotree
-:config
-(global-set-key (kbd "C-; n") 'neotree-toggle)
-)
+  (use-package neotree
+    :config
+    (global-set-key (kbd "C-; n") 'neotree-toggle)
+    )
 #+END_SRC
 
 #+RESULTS:
 : t
 
 #+BEGIN_SRC emacs-lisp
-        
-    ;; indent
-    (use-package dtrt-indent
-      :ensure t
-      :config
-      (dtrt-indent-global-mode t)
-      )
-
-
-    (use-package dired-subtree
-      :config
-      (bind-keys :map dired-mode-map
-                 ("i" . dired-subtree-insert)
-                 (";" . dired-subtree-remove)))
-
-
-    (use-package dired-git-info
-      :bind (:map dired-mode-map
-                  (")" . dired-git-info-mode)))
-
-    ;; attach image to orgmode
-
-    (use-package org-download)
-
-    ;;              :ensure t)
-
-    (use-package avy
-      :ensure t
-      :init
-      (bind-key "C-; j" 'avy-goto-char))
-
-    (use-package js-doc
-      :ensure t
-      :config
-      (add-hook 'js2-mode-hook
-                #'(lambda ()
-                    (define-key js2-mode-map "\C-ci" 'js-doc-insert-function-doc)
-                    (define-key js2-mode-map "@" 'js-doc-insert-tag)))
-      )
-
-    (use-package js2-mode
-      :ensure t
-      :init
-      (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
-
-
-
-    (defun efs/lsp-mode-setup ()
-      (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-      (lsp-headerline-breadcrumb-mode))
-
-    (use-package lsp-mode
-      :commands (lsp lsp-deferred)
-      :hook
-      (lsp-mode . efs/lsp-mode-setup)
-      ((typescript-mode js2-mode web-mode php-mode) . lsp)
-      :init
-      (setq lsp-keymap-prefix "C-c l")
-      :config
-      (lsp-enable-which-key-integration t)
-      (setq gc-cons-threshold 100000000)
-      (setq read-process-output-max (* 1024 1024)) ;; 1mb
-      (setq lsp-completion-provider :capf)
-      :bind
-      (:map lsp-mode-map
-            ("TAB" . completion-at-point))
-      )
-
-    ;;(use-package lsp-ui
-     ;; :hook (lsp-mode . lsp-ui-mode))
-
-    (use-package lsp-ivy)
-
-    (use-package company
-      :after lsp-mode
-      :hook (my-program-mode-hook . company-mode)
-      :bind
-      (:map lsp-mode-map ("<tab>" . company-indent-or-complete-common))
-      (:map company-active-map ("<tab>" . company-complete-selection))
-      (:map company-active-map ("C-n" . company-select-next))
-      (:map company-active-map ("C-p" . company-select-previous))
-      :custom
-      (setq companyminimum-prefix-length 3)
-      (setq company-auto-complete nil)
-      (setq company-idle-delay 0)
-      (setq tab-always-indent 'complete)
-      :config
-      (global-company-mode 1)
-      (define-key company-active-map (kbd "C-n") #'company-select-next)
-      (define-key company-active-map (kbd "C-p") #'company-select-previous))
-
-    (use-package company-box
-:ensure t
-
-)
-
-    (use-package company
-:ensure t
-      ;;:hook (company-mode . company-box-mode)
-)
-
-    ;; (use-package company-web)
-    ;; (add-hook 'after-init-hook 'global-company-mode)
-
-    ;; Magit
-    (use-package magit
-      :ensure t
-      :init
-      (bind-key "C-x g" 'magit-status)
-      (bind-key "C-; d" 'magit-diff-buffer-file))
-
-    (use-package goto-chg
-      :ensure t
-      :init
-      (bind-key "C-o" 'goto-last-change)
-      (bind-key "C-i" 'goto-last-change-reverse))
-
-
-    (use-package ace-window
-      :ensure t
-      :config
-      (global-set-key (kbd "C-x o") 'ace-window)
-      :init
-      (setq aw-dispatch-always t)
-      (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-      )
-
-    (use-package git-timemachine
-      :ensure t
-      )
-
-    (use-package multiple-cursors
-      :ensure t
-      :config)
-    ;; (global-set-key (kbd "C-S-<mouse-1>") 'mc/add-cursor-on-click))
-
-
-    (use-package wgrep-ag)
-
-    (use-package editorconfig
-      :config
-      (editorconfig-mode 1))
-
-
-    (use-package typescript-mode
-      :mode "\\.ts\\'"
-      :hook
-      (typescript-mode . lsp-deferred)
-      :config
-      (setq typescript-indent-level 2))
-
-    (use-package tide)
-    (defun setup-tide-mode ()
-      (interactive)
-      (tide-setup)
-      (flycheck-mode +1)
-      (setq flycheck-check-syntax-automatically '(save mode-enabled))
-      (eldoc-mode +1)
-      (tide-hl-identifier-mode +1)
-      ;; company is an optional dependency. You have to
-      ;; install it separately via package-install
-      ;; `M-x package-install [ret] company`
-      (company-mode +1))
-
-    (add-hook 'typescript-mode-hook #'setup-tide-mode)
-
-
-
-    (use-package js2-mode
-      :init
-      (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
-
-
-    (use-package elpy
-:ensure t
-     :init
-      (exec-path-from-shell-initialize)
-       (elpy-enable))
-
-        ;; indent
-        ;; (use-package dtrt-indent
-        ;;   :ensure t
-        ;;   :config
-        ;;   (dtrt-indent-global-mode t)
-        ;;   )
-
-
-        (use-package dired-subtree
-          :config
-          (bind-keys :map dired-mode-map
-                     ("i" . dired-subtree-insert)
-                     (";" . dired-subtree-remove)))
-
-
-        (use-package dired-git-info
-          :bind (:map dired-mode-map
-                      (")" . dired-git-info-mode)))
-
-        ;; attach image to orgmode
-
-        (use-package org-download)
-
-        ;;              :ensure t)
-
-        (use-package avy
-          :ensure t
-          :init
-          (bind-key "C-; j" 'avy-goto-char))
-
-        (use-package js-doc
-          :ensure t
-          :config
-          (add-hook 'js2-mode-hook
-                    #'(lambda ()
-                        (define-key js2-mode-map "\C-ci" 'js-doc-insert-function-doc)
-                        (define-key js2-mode-map "@" 'js-doc-insert-tag)))
-          )
-
-        (use-package js2-mode
-          :ensure t
-          :init
-          (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
-
-
-
-        (defun efs/lsp-mode-setup ()
-          (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-          (lsp-headerline-breadcrumb-mode))
-
-        (use-package lsp-mode
-          :commands (lsp lsp-deferred)
-          :hook
-          (lsp-mode . efs/lsp-mode-setup)
-          ((typescript-mode js2-mode web-mode php-mode) . lsp)
-          :init
-          (setq lsp-keymap-prefix "C-c l")
-          (setq +format-with-lsp nil)
-          :config
-          (lsp-enable-which-key-integration t)
-          (setq gc-cons-threshold 100000000)
-          (setq read-process-output-max (* 1024 1024)) ;; 1mb
-          (setq lsp-completion-provider :capf)
-          :bind
-          (:map lsp-mode-map
-                ("TAB" . completion-at-point))
-          )
-
-        (use-package lsp-ui
-          :hook (lsp-mode . lsp-ui-mode))
-
-        (use-package lsp-ivy)
-
-        (use-package company
-          :after lsp-mode
-          :hook (my-program-mode-hook . company-mode)
-          :bind
-          (:map lsp-mode-map ("<tab>" . company-indent-or-complete-common))
-          (:map company-active-map ("<tab>" . company-complete-selection))
-          (:map company-active-map ("C-n" . company-select-next))
-          (:map company-active-map ("C-p" . company-select-previous))
-          :custom
-          (setq companyminimum-prefix-length 3)
-          (setq company-auto-complete nil)
-          (setq company-idle-delay 0)
-          (setq tab-always-indent 'complete)
-          :config
-          (global-company-mode 1)
-          (define-key company-active-map (kbd "C-n") #'company-select-next)
-          (define-key company-active-map (kbd "C-p") #'company-select-previous))
-
-        (use-package company-box)
-
-        (use-package company
-          :hook (company-mode . company-box-mode))
-
-        ;; (use-package company-web)
-        ;; (add-hook 'after-init-hook 'global-company-mode)
-
-        ;; Magit
-        (use-package magit
-          :ensure t
-          :init
-          (bind-key "C-x g" 'magit-status)
-          (bind-key "C-; d" 'magit-diff-buffer-file))
-
-        (use-package goto-chg
-          :ensure t
-          :init
-          (bind-key "C-o" 'goto-last-change)
-          (bind-key "C-i" 'goto-last-change-reverse))
-
-
-        (use-package ace-window
-          :ensure t
-          :config
-          (global-set-key (kbd "C-x o") 'ace-window)
-          :init
-          (setq aw-dispatch-always t)
-          (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-          )
-
-        (use-package git-timemachine
-          :ensure t
-          )
-
-        (use-package multiple-cursors
-          :ensure t
-          :config)
-        ;; (global-set-key (kbd "C-S-<mouse-1>") 'mc/add-cursor-on-click))
-
-
-        (use-package wgrep-ag)
-
-        (use-package editorconfig
-          :config
-          (editorconfig-mode 1))
-
-
-        (use-package typescript-mode
-          :mode "\\.ts\\'"
-          :hook
-          (typescript-mode . lsp-deferred)
-          ;;:config
-          ;;(setq typescript-indent-level 2)
-  )
-
-        (use-package tide)
-        (defun setup-tide-mode ()
-          (interactive)
-          (tide-setup)
-          (flycheck-mode +1)
-          (setq flycheck-check-syntax-automatically '(save mode-enabled))
-          (eldoc-mode +1)
-          (tide-hl-identifier-mode +1)
-          ;; company is an optional dependency. You have to
-          ;; install it separately via package-install
-          ;; `M-x package-install [ret] company`
-          (company-mode +1))
-
-        (add-hook 'typescript-mode-hook #'setup-tide-mode)
-
-
-
-        (use-package js2-mode
-          :init
-          (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
-
-
-        (use-package elpy
+  
+  ;; indent
+  (use-package dtrt-indent
     :ensure t
-         :init
-          (exec-path-from-shell-initialize)
-           (elpy-enable))
-
-      (use-package drag-stuff
-          :config
-          (drag-stuff-global-mode 1)
-          (drag-stuff-define-keys)
-          (add-hook 'dired-mode-hook 'org-download-enable)
-          )
-
-        (use-package php-mode)
-
-        (use-package web-mode
-          :config
-          (add-to-list 'auto-mode-alist '("\\.vue\\'" . web-mode))
-          (add-to-list 'auto-mode-alist '("\\.jsx?$" . web-mode)) ;; auto-enable for .js/.jsx files
-          (add-to-list 'auto-mode-alist '("\\.tsx$" . web-mode)) ;; auto-enable for .js/.jsx files
-          ;;(setq web-mode-code-indent-offset 2)
-          ;;(setq web-mode-attr-indent-offset 2)
-          (setq web-mode-enable-auto-indentation nil)
-          )
-
-        (use-package kotlin-mode)
-
-        (use-package smartparens)
+    :config
+    (dtrt-indent-global-mode t)
+    )
 
 
+  (use-package dired-subtree
+    :config
+    (bind-keys :map dired-mode-map
+               ("i" . dired-subtree-insert)
+               (";" . dired-subtree-remove)))
 
-        (defun my-program-mode-hook ()
-          (hs-minor-mode)
-          (local-set-key (kbd "C-+") 'hs-show-all) ;; ctrl+shift+=
-          (local-set-key (kbd "C-_") 'hs-hide-all)   ;; ctrl+shift+-
-          (local-set-key (kbd "C-=") 'hs-show-block)
-          (local-set-key (kbd "C--") 'hs-hide-block)
-          (which-function-mode t)
-          (smartparens-mode t)
-          )
-        (add-hook 'tide-mode 'my-program-mode-hook)
-        (add-hook 'typescript-mode 'my-program-mode-hook)
-        (add-hook 'js-mode-hook 'my-program-mode-hook)
-        (add-hook 'web-mode-hook 'my-program-mode-hook)
-        ;;(add-hook 'vue-mode-hook 'my-program-mode-hook)
+
+  (use-package dired-git-info
+    :bind (:map dired-mode-map
+                (")" . dired-git-info-mode)))
+
+  ;; attach image to orgmode
+
+  (use-package org-download)
+
+  ;;              :ensure t)
+
+  (use-package avy
+    :ensure t
+    :init
+    (bind-key "C-; j" 'avy-goto-char))
+
+  (use-package js-doc
+    :ensure t
+    :config
+    (add-hook 'js2-mode-hook
+              #'(lambda ()
+                  (define-key js2-mode-map "\C-ci" 'js-doc-insert-function-doc)
+                  (define-key js2-mode-map "@" 'js-doc-insert-tag)))
+    )
+
+  (use-package js2-mode
+    :ensure t
+    :init
+    (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
+
+
+
+  (defun efs/lsp-mode-setup ()
+    (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+    (lsp-headerline-breadcrumb-mode))
+
+  (use-package lsp-mode
+    :commands (lsp lsp-deferred)
+    :hook
+    (lsp-mode . efs/lsp-mode-setup)
+    ((typescript-mode js2-mode web-mode php-mode) . lsp)
+    :init
+    (setq lsp-keymap-prefix "C-c l")
+    :config
+    (lsp-enable-which-key-integration t)
+    (setq gc-cons-threshold 100000000)
+    (setq read-process-output-max (* 1024 1024)) ;; 1mb
+    (setq lsp-completion-provider :capf)
+    :bind
+    (:map lsp-mode-map
+          ("TAB" . completion-at-point))
+    )
+
+  ;;(use-package lsp-ui
+  ;; :hook (lsp-mode . lsp-ui-mode))
+
+  (use-package lsp-ivy)
+
+  (use-package company
+    :after lsp-mode
+    :hook (my-program-mode-hook . company-mode)
+    :bind
+    (:map lsp-mode-map ("<tab>" . company-indent-or-complete-common))
+    (:map company-active-map ("<tab>" . company-complete-selection))
+    (:map company-active-map ("C-n" . company-select-next))
+    (:map company-active-map ("C-p" . company-select-previous))
+    :custom
+    (setq companyminimum-prefix-length 3)
+    (setq company-auto-complete nil)
+    (setq company-idle-delay 0)
+    (setq tab-always-indent 'complete)
+    :config
+    (global-company-mode 1)
+    (define-key company-active-map (kbd "C-n") #'company-select-next)
+    (define-key company-active-map (kbd "C-p") #'company-select-previous))
+
+  (use-package company-box
+    :ensure t
+
+    )
+
+  (use-package company
+    :ensure t
+    ;;:hook (company-mode . company-box-mode)
+    )
+
+  ;; (use-package company-web)
+  ;; (add-hook 'after-init-hook 'global-company-mode)
+
+  ;; Magit
+  (use-package magit
+    :ensure t
+    :init
+    (bind-key "C-x g" 'magit-status)
+    (bind-key "C-; d" 'magit-diff-buffer-file))
+
+  (use-package goto-chg
+    :ensure t
+    :init
+    (bind-key "C-o" 'goto-last-change)
+    (bind-key "C-i" 'goto-last-change-reverse))
+
+
+  (use-package ace-window
+    :ensure t
+    :config
+    (global-set-key (kbd "C-x o") 'ace-window)
+    :init
+    (setq aw-dispatch-always t)
+    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+    )
+
+  (use-package git-timemachine
+    :ensure t
+    )
+
+  (use-package multiple-cursors
+    :ensure t
+    :config)
+  ;; (global-set-key (kbd "C-S-<mouse-1>") 'mc/add-cursor-on-click))
+
+
+  (use-package wgrep-ag)
+
+  (use-package editorconfig
+    :config
+    (editorconfig-mode 1))
+
+
+  (use-package typescript-mode
+    :mode "\\.ts\\'"
+    :hook
+    (typescript-mode . lsp-deferred)
+    :config
+    (setq typescript-indent-level 2))
+
+  (use-package tide)
+  (defun setup-tide-mode ()
+    (interactive)
+    (tide-setup)
+    (flycheck-mode +1)
+    (setq flycheck-check-syntax-automatically '(save mode-enabled))
+    (eldoc-mode +1)
+    (tide-hl-identifier-mode +1)
+    ;; company is an optional dependency. You have to
+    ;; install it separately via package-install
+    ;; `M-x package-install [ret] company`
+    (company-mode +1))
+
+  (add-hook 'typescript-mode-hook #'setup-tide-mode)
+
+
+
+  (use-package js2-mode
+    :init
+    (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
+
+
+  (use-package elpy
+    :ensure t
+    :init
+    (exec-path-from-shell-initialize)
+    (elpy-enable))
+
+  ;; indent
+  ;; (use-package dtrt-indent
+  ;;   :ensure t
+  ;;   :config
+  ;;   (dtrt-indent-global-mode t)
+  ;;   )
+
+
+  (use-package dired-subtree
+    :config
+    (bind-keys :map dired-mode-map
+               ("i" . dired-subtree-insert)
+               (";" . dired-subtree-remove)))
+
+
+  (use-package dired-git-info
+    :bind (:map dired-mode-map
+                (")" . dired-git-info-mode)))
+
+  ;; attach image to orgmode
+
+  (use-package org-download)
+
+  ;;              :ensure t)
+
+  (use-package avy
+    :ensure t
+    :init
+    (bind-key "C-; j" 'avy-goto-char))
+
+  (use-package js-doc
+    :ensure t
+    :config
+    (add-hook 'js2-mode-hook
+              #'(lambda ()
+                  (define-key js2-mode-map "\C-ci" 'js-doc-insert-function-doc)
+                  (define-key js2-mode-map "@" 'js-doc-insert-tag)))
+    )
+
+  (use-package js2-mode
+    :ensure t
+    :init
+    (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
+
+
+
+  (defun efs/lsp-mode-setup ()
+    (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+    (lsp-headerline-breadcrumb-mode))
+
+  (use-package lsp-mode
+    :commands (lsp lsp-deferred)
+    :hook
+    (lsp-mode . efs/lsp-mode-setup)
+    ((typescript-mode js2-mode web-mode php-mode) . lsp)
+    :init
+    (setq lsp-keymap-prefix "C-c l")
+    (setq +format-with-lsp nil)
+    :config
+    (lsp-enable-which-key-integration t)
+    (setq gc-cons-threshold 100000000)
+    (setq read-process-output-max (* 1024 1024)) ;; 1mb
+    (setq lsp-completion-provider :capf)
+    :bind
+    (:map lsp-mode-map
+          ("TAB" . completion-at-point))
+    )
+
+  (use-package lsp-ui
+    :hook (lsp-mode . lsp-ui-mode))
+
+  (use-package lsp-ivy)
+
+  (use-package company
+    :after lsp-mode
+    :hook (my-program-mode-hook . company-mode)
+    :bind
+    (:map lsp-mode-map ("<tab>" . company-indent-or-complete-common))
+    (:map company-active-map ("<tab>" . company-complete-selection))
+    (:map company-active-map ("C-n" . company-select-next))
+    (:map company-active-map ("C-p" . company-select-previous))
+    :custom
+    (setq companyminimum-prefix-length 3)
+    (setq company-auto-complete nil)
+    (setq company-idle-delay 0)
+    (setq tab-always-indent 'complete)
+    :config
+    (global-company-mode 1)
+    (define-key company-active-map (kbd "C-n") #'company-select-next)
+    (define-key company-active-map (kbd "C-p") #'company-select-previous))
+
+  (use-package company-box)
+
+  (use-package company
+    :hook (company-mode . company-box-mode))
+
+  ;; (use-package company-web)
+  ;; (add-hook 'after-init-hook 'global-company-mode)
+
+  ;; Magit
+  (use-package magit
+    :ensure t
+    :init
+    (bind-key "C-x g" 'magit-status)
+    (bind-key "C-; d" 'magit-diff-buffer-file))
+
+  (use-package goto-chg
+    :ensure t
+    :init
+    (bind-key "C-o" 'goto-last-change)
+    (bind-key "C-i" 'goto-last-change-reverse))
+
+
+  (use-package ace-window
+    :ensure t
+    :config
+    (global-set-key (kbd "C-x o") 'ace-window)
+    :init
+    (setq aw-dispatch-always t)
+    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+    )
+
+  (use-package git-timemachine
+    :ensure t
+    )
+
+  (use-package multiple-cursors
+    :ensure t
+    :config)
+  ;; (global-set-key (kbd "C-S-<mouse-1>") 'mc/add-cursor-on-click))
+
+
+  (use-package wgrep-ag)
+
+  (use-package editorconfig
+    :config
+    (editorconfig-mode 1))
+
+
+  (use-package typescript-mode
+    :mode "\\.ts\\'"
+    :hook
+    (typescript-mode . lsp-deferred)
+    ;;:config
+    ;;(setq typescript-indent-level 2)
+    )
+
+  (use-package tide)
+  (defun setup-tide-mode ()
+    (interactive)
+    (tide-setup)
+    (flycheck-mode +1)
+    (setq flycheck-check-syntax-automatically '(save mode-enabled))
+    (eldoc-mode +1)
+    (tide-hl-identifier-mode +1)
+    ;; company is an optional dependency. You have to
+    ;; install it separately via package-install
+    ;; `M-x package-install [ret] company`
+    (company-mode +1))
+
+  (add-hook 'typescript-mode-hook #'setup-tide-mode)
+
+
+
+  (use-package js2-mode
+    :init
+    (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
+
+
+  (use-package elpy
+    :ensure t
+    :init
+    (exec-path-from-shell-initialize)
+    (elpy-enable))
+
+  (use-package drag-stuff
+    :config
+    (drag-stuff-global-mode 1)
+    (drag-stuff-define-keys)
+    (add-hook 'dired-mode-hook 'org-download-enable)
+    )
+
+  (use-package php-mode)
+
+  (use-package web-mode
+    :config
+    (add-to-list 'auto-mode-alist '("\\.vue\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.jsx?$" . web-mode)) ;; auto-enable for .js/.jsx files
+    (add-to-list 'auto-mode-alist '("\\.tsx$" . web-mode)) ;; auto-enable for .js/.jsx files
+    ;;(setq web-mode-code-indent-offset 2)
+    ;;(setq web-mode-attr-indent-offset 2)
+    (setq web-mode-enable-auto-indentation nil)
+    )
+
+  (use-package kotlin-mode)
+
+  (use-package smartparens)
+
+
+
+  (defun my-program-mode-hook ()
+    (hs-minor-mode)
+    (local-set-key (kbd "C-+") 'hs-show-all) ;; ctrl+shift+=
+    (local-set-key (kbd "C-_") 'hs-hide-all)   ;; ctrl+shift+-
+    (local-set-key (kbd "C-=") 'hs-show-block)
+    (local-set-key (kbd "C--") 'hs-hide-block)
+    (which-function-mode t)
+    (smartparens-mode t)
+    )
+  (add-hook 'tide-mode 'my-program-mode-hook)
+  (add-hook 'typescript-mode 'my-program-mode-hook)
+  (add-hook 'js-mode-hook 'my-program-mode-hook)
+  (add-hook 'web-mode-hook 'my-program-mode-hook)
+  ;;(add-hook 'vue-mode-hook 'my-program-mode-hook)
 
 #+END_SRC
 
@@ -885,13 +889,13 @@
 
 *** Golang setup
 #+begin_src emacs-lisp
-(use-package go-mode)
-(add-hook 'go-mode-hook
-  (lambda ()
-    (setq-default)
-    (setq tab-width 2)
-    (setq standard-indent 2)
-    (setq indent-tabs-mode nil)))
+  (use-package go-mode)
+  (add-hook 'go-mode-hook
+            (lambda ()
+              (setq-default)
+              (setq tab-width 2)
+              (setq standard-indent 2)
+              (setq indent-tabs-mode nil)))
 #+end_src
 
 *** CPP setup
