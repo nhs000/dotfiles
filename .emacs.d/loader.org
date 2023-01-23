@@ -91,8 +91,8 @@
                            ("elpag" . "https://elpa.gnu.org/packages/")))
 
 
-  (global-set-key (kbd "C-; b p")  'previous-buffer)
-  (global-set-key (kbd "C-; b n")  'next-buffer)
+  ;;(global-set-key (kbd "C-; j")  'previous-buffer)
+  ;;(global-set-key (kbd "C-; k")  'next-buffer)
   (global-set-key "\M-N" "\C-u1\C-v")
   (global-set-key "\M-P" "\C-u1\M-v")
 
@@ -148,8 +148,8 @@
 #+BEGIN_SRC emacs-lisp
   (global-unset-key (kbd "C-;"))
   (global-set-key (kbd "C-; C-v") 'set-mark-command)
-  (global-set-key (kbd "C-; b p")  'previous-buffer)
-  (global-set-key (kbd "C-; b n")  'next-buffer)
+  (global-set-key (kbd "C-; p")  'previous-buffer)
+  (global-set-key (kbd "C-; n")  'next-buffer)
   (global-set-key (kbd "C-; ,")    'rename-buffer)
   (global-set-key (kbd "C-; C-h") 'windmove-left)
   (global-set-key (kbd "C-; C-j") 'windmove-down)
@@ -208,13 +208,39 @@
     :bind
     (("M-o" . swiper-all-thing-at-point)
      ("M-x" . counsel-M-x)
-     ("C-x C-f" . counsel-find-file)
      ("C-c M-o" . counsel-multi)
      :map ivy-minibuffer-map
      )
     :init
-    (ivy-mode 1)
-    (bind-key "C-; l" 'counsel-projectile-switch-to-buffer)
+    (ivy-mode 0)
+    ;; (bind-key "C-; l" 'counsel-projectile-switch-to-buffer)
+    (global-set-key (kbd "C-s") 'swiper-isearch)
+    (global-set-key (kbd "M-x") 'counsel-M-x)
+    (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+    (global-set-key (kbd "M-y") 'counsel-yank-pop)
+    (global-set-key (kbd "<f1> f") 'counsel-describe-function)
+    (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+    (global-set-key (kbd "<f1> l") 'counsel-find-library)
+    (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+    (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+    (global-set-key (kbd "<f2> j") 'counsel-set-variable)
+    (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
+    (global-set-key (kbd "C-c v") 'ivy-push-view)
+    (global-set-key (kbd "C-c V") 'ivy-pop-view)
+
+    (global-set-key (kbd "C-c c") 'counsel-compile)
+    (global-set-key (kbd "C-c g") 'counsel-git)
+    (global-set-key (kbd "C-c j") 'counsel-git-grep)
+    (global-set-key (kbd "C-c L") 'counsel-git-log)
+    (global-set-key (kbd "C-c k") 'counsel-rg)
+    (global-set-key (kbd "C-c m") 'counsel-linux-app)
+    (global-set-key (kbd "C-c n") 'counsel-fzf)
+    (global-set-key (kbd "C-x l") 'counsel-locate)
+    (global-set-key (kbd "C-c J") 'counsel-file-jump)
+    (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+    (global-set-key (kbd "C-c w") 'counsel-wmctrl)
+    (global-set-key (kbd "C-c b") 'counsel-bookmark)
+
     (setq ivy-re-builders-alist
           '((ivy-switch-buffer . ivy--regex-plus)
             (t . ivy--regex-fuzzy)))
@@ -228,7 +254,7 @@
     :config
     (global-set-key (kbd "C-; L") 'counsel-ibuffer)
     ;; show killring
-    (global-set-key (kbd "C-; y") 'counsel-yank-pop)
+    ;; (global-set-key (kbd "C-; y") 'counsel-yank-pop)
     )
 
   (use-package all-the-icons
