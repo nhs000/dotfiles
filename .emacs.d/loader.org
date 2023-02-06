@@ -65,7 +65,7 @@
   (setq frame-title-format nil)
   (set-face-attribute 'default nil
                       :family "Fira Code"
-                      :height 150
+                      :height 200
                       :weight 'normal
                       :width 'normal)
 
@@ -436,6 +436,8 @@
     (setq gc-cons-threshold 100000000)
     (setq read-process-output-max (* 1024 1024)) ;; 1mb
     (setq lsp-completion-provider :capf)
+    (setq lsp-restart 'auto-restart)
+    (setq lsp-ui-sideline-show-code-actions t)
     :bind
     (:map lsp-mode-map
           ("TAB" . completion-at-point))
@@ -923,6 +925,13 @@
 
 *** CPP setup
 #+begin_src emacs-lisp
-  (use-package gtags-mode)
-  (use-package counsel-gtags)
+  (add-hook 'c-mode-hook 'lsp)
+  (add-hook 'c++-mode-hook 'lsp)
+
+  (use-package dap-mode)
+  (with-eval-after-load 'lsp-mode
+    (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
+    (require 'dap-cpptools)
+    (yas-global-mode))
+
 #+end_src
