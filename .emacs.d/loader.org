@@ -1,72 +1,75 @@
 * General setup
 #+BEGIN_SRC emacs-lisp
 
-    (require 'package)
+  (require 'package)
 
-    (setq package-archives '(
-                             ("melpa" . "https://melpa.org/packages/")
-                             ("org" . "https://orgmode.org/elpa")
-                             ("elpag" . "https://elpa.gnu.org/packages/")))
+  (setq package-archives '(
+                           ("melpa" . "https://melpa.org/packages/")
+                           ("org" . "https://orgmode.org/elpa")
+                           ("elpag" . "https://elpa.gnu.org/packages/")))
 
-    (package-initialize)
+  (package-initialize)
 
-    (unless package-archive-contents
+  (unless package-archive-contents
     (package-refresh-contents))
 
-    (package-install 'use-package)
-    (require 'use-package)
+  (package-install 'use-package)
+  (require 'use-package)
 
-    (setq use-package-always-ensure t)
+  (setq use-package-always-ensure t)
 
-    (if (eq system-type 'darwin)
-                                          (setq mac-option-key-is-meta nil
-                                                mac-command-key-is-meta t
-                                                mac-command-modifier 'meta
-                                                mac-option-modifier 'none)
-                                        )
+  (if (eq system-type 'darwin)
+      (setq mac-option-key-is-meta nil
+            mac-command-key-is-meta t
+            mac-command-modifier 'meta
+            mac-option-modifier 'none)
+    )
   (setq auto-window-vscroll nil)
-    ;; (global-display-line-numbers-mode t)
+  ;; (global-display-line-numbers-mode t)
 
-    ;; Don't display welcom page
-    (setq inhibit-startup-message t)
+  ;; Don't display welcom page
+  (setq inhibit-startup-message t)
   (setq ring-bell-function 'ignore)
-    (menu-bar-mode 0)
 
-    (tool-bar-mode 0)
+  (menu-bar-mode 0)
 
-    (setq backup-directory-alist '(("." . "~/.emacs_saves")))
+  (tool-bar-mode 0)
 
-    ;; auto complete when find file
-    (electric-pair-mode)
+  (tab-bar-mode 0)
 
-    (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-    (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-    (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+  (setq backup-directory-alist '(("." . "~/.emacs_saves")))
 
-    (setq column-number-mode t)
+  ;; auto complete when find file
+  (electric-pair-mode)
 
-    (fset 'yes-or-no-p 'y-or-n-p)
-    (delete-selection-mode 1)
-    ;; Show match parenthesis
-    (show-paren-mode 1)
+  (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+  (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+  (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
-    ;; Don't display welcom page
-    (setq inhibit-startup-message t)
+  (setq column-number-mode t)
 
-    ;; Don't insert instructions in the *scratch* buffer
-    (setq initil-scratch-message nil)
+  (fset 'yes-or-no-p 'y-or-n-p)
+  (delete-selection-mode 1)
+  ;; Show match parenthesis
+  (show-paren-mode 1)
 
-    ;; Start at full-screen
-    (add-to-list 'default-frame-alist '(fullscreen . maximized))
-    (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-    (add-to-list 'default-frame-alist '(ns-appearance . dark))
-    (setq ns-use-proxy-icon  nil)
-    (setq frame-title-format nil)
-    (set-face-attribute 'default nil
-                        :family "Fira Code"
-                        :height 130
-                        :weight 'normal
-                        :width 'normal)
+  ;; Don't display welcom page
+  (setq inhibit-startup-message t)
+
+  ;; Don't insert instructions in the *scratch* buffer
+  (setq initil-scratch-message nil)
+
+  ;; Start at full-screen
+  (add-to-list 'default-frame-alist '(fullscreen . maximized))
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+  (add-to-list 'default-frame-alist '(ns-appearance . dark))
+  (setq ns-use-proxy-icon  nil)
+  (setq frame-title-format nil)
+  (set-face-attribute 'default nil
+                      :family "Fira Code"
+                      :height 130
+                      :weight 'normal
+                      :width 'normal)
 
   (global-set-key (kbd "C-; C-z") 'toggle-maximize-buffer)
 
@@ -78,18 +81,18 @@
              (window-configuration-to-register '_)
              (delete-other-windows))))
 
-    (require 'misc)
-    (global-set-key (kbd "M-f") 'forward-to-word)
-    (global-set-key (kbd "M-e") 'forward-word)
+  (require 'misc)
+  (global-set-key (kbd "M-f") 'forward-to-word)
+  (global-set-key (kbd "M-e") 'forward-word)
 
-    (global-set-key (kbd "C-; C-z") 'toggle-maximize-buffer)
-    (defun toggle-maximize-buffer () "Maximize buffer"
-           (interactive)
-           (if (= 1 (length (window-list)))
-               (jump-to-register '_) 
-             (progn
-               (window-configuration-to-register '_)
-               (delete-other-windows))))
+  (global-set-key (kbd "C-; C-z") 'toggle-maximize-buffer)
+  (defun toggle-maximize-buffer () "Maximize buffer"
+         (interactive)
+         (if (= 1 (length (window-list)))
+             (jump-to-register '_) 
+           (progn
+             (window-configuration-to-register '_)
+             (delete-other-windows))))
 
 
   ;;(global-set-key (kbd "C-; j")  'previous-buffer)
@@ -98,58 +101,64 @@
   (global-set-key "\M-P" "\C-u5\M-v")
 
 
-    (global-set-key (kbd "C-; b p")  'previous-buffer)
-    (global-set-key (kbd "C-; b n")  'next-buffer)
-    (global-set-key "\M-N" "\C-u1\C-v")
-    (global-set-key "\M-P" "\C-u1\M-v")
+  (global-set-key (kbd "C-; b p")  'previous-buffer)
+  (global-set-key (kbd "C-; b n")  'next-buffer)
+  (global-set-key "\M-N" "\C-u1\C-v")
+  (global-set-key "\M-P" "\C-u1\M-v")
 
-    ;; Workaround for copy
-    (setq save-interprogram-paste-before-kill t)
+  ;; Workaround for copy
+  (setq save-interprogram-paste-before-kill t)
 
-    ;; copy files
-    (setq dired-dwim-target t)
+  ;; copy files
+  (setq dired-dwim-target t)
 
-    ;; use spaces over tabs
-    (setq-default indent-tabs-mode nil)
+  ;; use spaces over tabs
+  (setq-default indent-tabs-mode nil)
 
-    (defvar my-ediff-last-windows nil)
+  (defvar my-ediff-last-windows nil)
 
-    (defun my-store-pre-ediff-winconfig ()
-      (setq my-ediff-last-windows (current-window-configuration)))
+  (defun my-store-pre-ediff-winconfig ()
+    (setq my-ediff-last-windows (current-window-configuration)))
 
-    (defun my-restore-pre-ediff-winconfig ()
-      (set-window-configuration my-ediff-last-windows))
+  (defun my-restore-pre-ediff-winconfig ()
+    (set-window-configuration my-ediff-last-windows))
 
-    (add-hook 'ediff-before-setup-hook #'my-store-pre-ediff-winconfig)
-    (add-hook 'ediff-quit-hook #'my-restore-pre-ediff-winconfig)
+  (add-hook 'ediff-before-setup-hook #'my-store-pre-ediff-winconfig)
+  (add-hook 'ediff-quit-hook #'my-restore-pre-ediff-winconfig)
 
-    ;; kill buffer after delete
-    (defun delete-file-visited-by-buffer (buffername)
-      "Delete the file visited by the buffer named BUFFERNAME."
-      (interactive "b")
-      (let* ((buffer (get-buffer buffername))
-             (filename (buffer-file-name buffer)))
-        (when filename
-          (delete-file filename)
-          (kill-buffer-ask buffer))))
-
-
-
-    (add-hook 'org-mode-hook (lambda () (org-indent-mode t)))
-    (add-hook 'org-mode-hook #'toggle-truncate-lines)
-
-    (use-package exec-path-from-shell
-      :init
-      (when (memq window-system '(mac ns x))
-        (exec-path-from-shell-initialize))
-      )
+  ;; kill buffer after delete
+  (defun delete-file-visited-by-buffer (buffername)
+    "Delete the file visited by the buffer named BUFFERNAME."
+    (interactive "b")
+    (let* ((buffer (get-buffer buffername))
+           (filename (buffer-file-name buffer)))
+      (when filename
+        (delete-file filename)
+        (kill-buffer-ask buffer))))
 
 
-    (setq-default frame-title-format '(buffer-file-name "%f" "%b"))
+
+  (add-hook 'org-mode-hook (lambda () (org-indent-mode t)))
+  (add-hook 'org-mode-hook #'toggle-truncate-lines)
+
+  ;; active Babel languages
+(org-babel-do-load-languages
+'org-babel-load-languages
+'((shell . t)))
+
+
+  (use-package exec-path-from-shell
+    :init
+    (when (memq window-system '(mac ns x))
+      (exec-path-from-shell-initialize))
+    )
+
+
+  (setq-default frame-title-format '(buffer-file-name "%f" "%b"))
 
   (setq ido-enable-flex-matching t)
-(setq ido-everywhere t)
-(ido-mode 1)
+  (setq ido-everywhere t)
+  (ido-mode 1)
 #+END_SRC
 
 #+RESULTS:
@@ -180,7 +189,7 @@
   ;; (load-theme 'doom-oceanic-next t)
   (use-package doom-themes
     :ensure t)
-  (load-theme 'doom-ir-black t)
+  (load-theme 'doom-nord-light t)
 #+end_src
 
 #+RESULTS:
@@ -251,9 +260,9 @@
     (global-set-key (kbd "C-c w") 'counsel-wmctrl)
     (global-set-key (kbd "C-c b") 'counsel-bookmark)
 
-    (setq ivy-re-builders-alist
-          '((ivy-switch-buffer . ivy--regex-plus)
-            (t . ivy--regex-fuzzy)))
+    ;; (setq ivy-re-builders-alist
+    ;;       '((ivy-switch-buffer . ivy--regex-plus)
+    ;;         (t . ivy--regex-fuzzy)))
     )
 
   (use-package ivy-posframe
@@ -311,15 +320,15 @@
     )
 
   (use-package treemacs
-  :bind
-  (:map global-map
-        ("M-0"       . treemacs-select-window)
-        ("C-x t 1"   . treemacs-delete-other-windows)
-        ("C-x t t"   . treemacs)
-        ("C-x t d"   . treemacs-select-directory)
-        ("C-x t B"   . treemacs-bookmark)
-        ("C-x t C-t" . treemacs-find-file)
-        ("C-x t M-t" . treemacs-find-tag)))
+    :bind
+    (:map global-map
+          ("M-0"       . treemacs-select-window)
+          ("C-x t 1"   . treemacs-delete-other-windows)
+          ("C-x t t"   . treemacs)
+          ("C-x t d"   . treemacs-select-directory)
+          ("C-x t B"   . treemacs-bookmark)
+          ("C-x t C-t" . treemacs-find-file)
+          ("C-x t M-t" . treemacs-find-tag)))
 
 
   (use-package ag)
@@ -372,10 +381,10 @@
     :config
     (global-set-key (kbd "C-'") 'er/expand-region))
 
-  (use-package neotree
-    :config
-    (global-set-key (kbd "C-; n") 'neotree-toggle)
-    )
+  ;; (use-package neotree
+  ;;   :config
+  ;;   (global-set-key (kbd "C-; n") 'neotree-toggle)
+  ;;   )
 #+END_SRC
 
 #+RESULTS:
@@ -768,6 +777,7 @@
   (add-hook 'typescript-mode 'my-program-mode-hook)
   (add-hook 'js-mode-hook 'my-program-mode-hook)
   (add-hook 'web-mode-hook 'my-program-mode-hook)
+  (add-hook 'go-mode 'my-program-mode-hook)
   ;;(add-hook 'vue-mode-hook 'my-program-mode-hook)
 
 #+END_SRC
