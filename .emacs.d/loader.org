@@ -71,6 +71,15 @@
                     :weight 'normal
                     :width 'normal)
 
+  (global-set-key (kbd "C-; C-z") 'toggle-maximize-buffer)
+
+  (defun toggle-maximize-buffer () "Maximize buffer"
+         (interactive)
+         (if (= 1 (length (window-list)))
+             (jump-to-register '_) 
+           (progn
+             (window-configuration-to-register '_)
+             (delete-other-windows))))
 
 (require 'misc)
 (global-set-key (kbd "M-f") 'forward-to-word)

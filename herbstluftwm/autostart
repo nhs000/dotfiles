@@ -9,7 +9,8 @@ hc() {
 hc emit_hook reload
 
 # rotate left screen
-xrandr --output HDMI-1 --rotate left
+xrandr --output HDMI-0 --right-of DVI-D-0
+xrandr --output HDMI-0 --rotate left
 
 # polybar multiple screens
 if type "xrandr"; then
@@ -46,7 +47,7 @@ hc keybind $Mod-Shift-q quit
 hc keybind $Mod-Shift-r reload
 hc keybind $Mod-Shift-c close
 hc keybind $Mod-Return spawn "${TERMINAL:-alacritty}" # use your $TERMINAL with xterm as fallback
-hc keybind $Mod-d spawn rofi -show combi -combi-modi "window,run,ssh" -modi combi
+hc keybind $Mod-d spawn rofi -show combi -combi-modi "window,drun,run,ssh" -modi combi
 
 # basic movement in tiling and floating mode
 # focusing clients
