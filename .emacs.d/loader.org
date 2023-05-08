@@ -40,6 +40,7 @@
 (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+(when (eq system-type 'darwin) (ns-auto-titlebar-mode))
 
 (setq column-number-mode t)
 
@@ -61,11 +62,12 @@
 ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 (add-to-list 'default-frame-alist '(ns-appearance . dark))
+
 (setq ns-use-proxy-icon  nil)
 (setq frame-title-format nil)
 (set-face-attribute 'default nil
                     :family "Fira Code"
-                    :height 200
+                    :height 160
                     :weight 'normal
                     :width 'normal)
 
@@ -146,6 +148,36 @@
 (setq org-src-preserve-indentation nil 
       org-edit-src-content-indentation 0)
 
+(defun file-notify-rm-all-watches ()
+  "Remove all existing file notification watches from Emacs."
+  (interactive)
+  (maphash
+   (lambda (key _value)
+     (file-notify-rm-watch key))
+   file-notify-descriptors))
+
+
+
+;; Setup straight
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+(setq package-enable-at-startup nil)
+
+(use-package copilot
+  :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
+  :ensure t)
+
+
 #+END_SRC
 
 #+RESULTS:
@@ -176,7 +208,7 @@
 ;; (load-theme 'doom-oceanic-next t)
 (use-package doom-themes
   :ensure t)
-(load-theme 'doom-ir-black t)
+(load-theme 'doom-flatwhite t)
 #+end_src
 
 #+RESULTS:
@@ -940,6 +972,8 @@
 #+begin_src emacs-lisp
 (add-hook 'c-mode-hook 'lsp)
 (add-hook 'c++-mode-hook 'lsp)
+(add-hook 'c-mode-hook #'lsp-deferred)
+(add-hook 'c++-mode-hook #'lsp-deferred)
 
 (use-package dap-mode)
 (with-eval-after-load 'lsp-mode
@@ -948,3 +982,9 @@
   (yas-global-mode))
 
 #+end_src
+
+*** ChatGPT setup
+#+begin_src emacs-lisp
+(setq chatgpt-shell-openai-key "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")
+#+end_src
+
