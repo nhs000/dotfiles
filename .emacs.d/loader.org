@@ -67,6 +67,7 @@
 (setq frame-title-format nil)
 (set-face-attribute 'default nil
                     :family "Fira Code"
+                    ;;:family "CommitMono"
                     :height 160
                     :weight 'normal
                     :width 'normal)
@@ -186,6 +187,11 @@
   :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
   :ensure t)
 
+(add-hook 'prog-mode-hook 'copilot-mode)
+(add-hook 'yaml-mode-hook 'copilot-mode)
+(define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+(define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+
 
 #+END_SRC
 
@@ -217,7 +223,9 @@
 ;; (load-theme 'doom-oceanic-next t)
 (use-package doom-themes
   :ensure t)
-(load-theme 'doom-flatwhite t)
+(use-package timu-caribbean-theme
+  :ensure t)
+(load-theme 'timu-caribbean t)
 #+end_src
 
 #+RESULTS:
@@ -358,13 +366,20 @@
 (use-package treemacs
   :bind
   (:map global-map
-        ("M-0"       . treemacs-select-window)
+        ("C-t"       . treemacs-select-window)
         ("C-x t 1"   . treemacs-delete-other-windows)
         ("C-x t t"   . treemacs)
         ("C-x t d"   . treemacs-select-directory)
         ("C-x t B"   . treemacs-bookmark)
         ("C-x t C-t" . treemacs-find-file)
         ("C-x t M-t" . treemacs-find-tag)))
+  
+(with-eval-after-load 'treemacs
+  (defun treemacs-custom-filter (file _)
+    (or (s-starts-with? "bazel-" file)
+        (s-starts-with? "3rdparty" file)
+        ))
+  (push #'treemacs-custom-filter treemacs-ignored-file-predicates))
 
 
 (use-package ag)
@@ -417,10 +432,10 @@
   :config
   (global-set-key (kbd "C-'") 'er/expand-region))
 
-(use-package neotree
-  :config
-  (global-set-key (kbd "C-; n") 'neotree-toggle)
-  )
+;; (use-package neotree
+;;   :config
+;;   (global-set-key (kbd "C-; n") 'neotree-toggle)
+;;   )
 #+END_SRC
 
 #+RESULTS:
@@ -717,6 +732,7 @@
 (use-package ace-window
   :ensure t
   :config
+  (global-set-key (kbd "M-0") 'ace-window)
   (global-set-key (kbd "C-x o") 'ace-window)
   :init
   (setq aw-dispatch-always nil)
@@ -800,7 +816,10 @@
 
 (use-package smartparens)
 
-
+(use-package zoom-window)
+(global-set-key (kbd "C-x C-z") 'zoom-window-zoom)
+(custom-set-variables
+ '(zoom-window-mode-line-color "DarkGreen"))
 
 (defun my-program-mode-hook ()
   (hs-minor-mode)
@@ -816,6 +835,11 @@
 (add-hook 'js-mode-hook 'my-program-mode-hook)
 (add-hook 'web-mode-hook 'my-program-mode-hook)
 ;;(add-hook 'vue-mode-hook 'my-program-mode-hook)
+
+
+;; (use-package indent-bars
+;;   :load-path "/Users/hs/.local/share/indent-bars"
+;;   :hook ((python-mode yaml-mode) . indent-bars-mode))
 
 #+END_SRC
 
@@ -994,6 +1018,7 @@
 
 *** ChatGPT setup
 #+begin_src emacs-lisp
-(setq chatgpt-shell-openai-key "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")
+(use-package chatgpt-shell)
+(setq chatgpt-shell-openai-key "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")
 #+end_src
 
