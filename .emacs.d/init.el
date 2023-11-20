@@ -18,6 +18,7 @@
  '(jdee-db-active-breakpoint-face-colors (cons "#131313" "#ffd76d"))
  '(jdee-db-requested-breakpoint-face-colors (cons "#131313" "#bad761"))
  '(jdee-db-spec-breakpoint-face-colors (cons "#131313" "#535763"))
+ '(lsp-java-java-path "/Users/hs/.sdkman/candidates/java/current/bin/java")
  '(objed-cursor-color "#ff657a")
  '(package-selected-packages
    '(ein jupyter chatgpt-shell ns-auto-titlebar good-scroll dap-mode treemacs lsp-ui go-mode dtrt-indent counsel-etags counsel-gtags highlight-indent-guides kubernetes-tramp kubernetes-helm kubernetes fontawesome elpy lsp-pyright dashboard python-mode pyenv-mode company-terraform terraform-doc terraform-mode yapfify sphinx-doc yasnippet-snippets yasnippet-classic-snippets eslint-fix eslintd-fix bazel jenkinsfile-mode scala-mode yaml-mode js-format auto-indent-mode dockerfile-mode kotlin-mode cmake-mode cpputils-cmake tramp-theme ivy-posframe which-key wgrep-ag web-mode use-package tide smex smartparens rainbow-delimiters php-mode org-onenote org-download org-bullets multiple-cursors magit lsp-ivy js2-mode js-doc ivy-rich goto-chg git-timemachine expand-region exec-path-from-shell editorconfig dumb-jump drag-stuff doom-themes doom-modeline dired-subtree dired-git-info counsel-projectile company-box centaur-tabs bm anzu ag ace-window))
@@ -48,7 +49,8 @@
  '(vc-annotate-very-old-color nil)
  '(web-mode-attr-indent-offset 2)
  '(web-mode-enable-auto-indentation nil)
- '(web-mode-tests-directory "~/tests/"))
+ '(web-mode-tests-directory "~/tests/")
+ '(zoom-window-mode-line-color "DarkGreen"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
