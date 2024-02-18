@@ -72,9 +72,9 @@
 (setq frame-title-format nil)
 (set-face-attribute 'default nil
                     :family "Fira Code"
-                    ;;:family "CommitMono"
-                    ;;:family "JetBrainsMono"
-                    :height 130
+                    ;; :family "CommitMono"
+                    ;; :family "JetBrainsMono"
+                    :height 140
                     :weight 'normal
                     :width 'normal)
   (global-set-key (kbd "C-; C-z") 'toggle-maximize-buffer)
@@ -186,7 +186,7 @@
 
 (setf window-combination-resize t)
 (global-unset-key "\C-z")
-(global-unset-key "\C-x\C-c")
+;; (global-unset-key "\C-x\C-c")
 
 
 
@@ -228,7 +228,7 @@
 (use-package timu-caribbean-theme
   :ensure t)
 ;;(load-theme 'timu-caribbean t)
-(load-theme 'doom-outrun-electric t)
+(load-theme 'leuven)
 
 (use-package dashboard
   :ensure t
@@ -502,6 +502,14 @@
   )
 (use-package org-download)
 #+end_src
+** Yasnipeet
+#+begin_src emacs-lisp
+(use-package yasnippet
+  :config
+  (add-hook 'prog-mode-hook #'yas-minor-mode)
+)
+
+#+end_src
 
 * Programming
 ** Dev tools (git, flycheck...)
@@ -750,6 +758,26 @@
 (add-hook 'c++-mode-hook 'lsp)
 (add-hook 'c-mode-hook #'lsp-deferred)
 (add-hook 'c++-mode-hook #'lsp-deferred)
+;; disable flycheck for c++
+(add-hook 'c++-mode-hook (lambda () (flycheck-mode -1)))
+
+;; add key binding to compile and run c++ code
+;; switch to *compile-and-run* buffer to see the result
+(defun compile-and-run ()
+  "Compile and run current buffer file interactively."
+  (interactive)
+  (let ((file-name (file-name-nondirectory buffer-file-name)))
+    (switch-to-buffer-other-window "*compile-and-run*")
+    (erase-buffer)
+    (async-shell-command (concat "g++ -std=c++11 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -o " (file-name-sans-extension file-name) " " file-name " && ./" (file-name-sans-extension file-name)) "*compile-and-run*")
+    ))
+
+;; set key binding for compile-and-run, only in c++-mode
+(add-hook 'c++-mode-hook
+          (lambda ()
+            (local-set-key (kbd "C-c C-c") 'compile-and-run)))
+
+
 #+end_src
 
 *** Java
