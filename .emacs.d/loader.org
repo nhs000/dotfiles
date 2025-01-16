@@ -45,7 +45,7 @@
 (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-(when (eq system-type 'darwin) (ns-auto-titlebar-mode))
+;;(when (eq system-type 'darwin) (ns-auto-titlebar-mode))
 
 (setq column-number-mode t)
 
@@ -56,6 +56,10 @@
 
 ;; Enable tab-bar-mode
 (tab-bar-mode 1)
+(global-set-key "\M-p" 'tab-previous)
+(global-set-key "\M-n" 'tab-next)
+
+
 
 ;; Don't display welcom page
 (setq inhibit-startup-message t)
@@ -101,14 +105,6 @@
            (window-configuration-to-register '_)
            (delete-other-windows))))
 
-
-(require 'package)
-(setq package-archives '(
-                         ("melpa" . "https://melpa.org/packages/")
-                         ("org" . "https://orgmode.org/elpa")
-                         ("elpag" . "https://elpa.gnu.org/packages/")))
-
-
 ;;(global-set-key (kbd "C-; j")  'previous-buffer)
 ;;(global-set-key (kbd "C-; k")  'next-buffer)
 
@@ -151,10 +147,10 @@
 (add-hook 'org-mode-hook #'toggle-truncate-lines)
 
 (use-package exec-path-from-shell
-  :init
-  (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-initialize))
-  )
+   :init
+   (when (memq window-system '(mac ns x))
+     (exec-path-from-shell-initialize))
+   )
 
 
 (setq-default frame-title-format '(buffer-file-name "%f" "%b"))
@@ -223,27 +219,16 @@
 #+end_src
 ** Theme
 #+begin_src emacs-lisp
-(use-package doom-themes
-  :ensure t)
-(use-package timu-caribbean-theme
-  :ensure t)
+(use-package doom-themes)
+  
+(use-package timu-caribbean-theme)
 ;;(load-theme 'timu-caribbean t)
 (load-theme 'leuven)
 
-(use-package dashboard
-  :ensure t
-  :config
-  (dashboard-setup-startup-hook)
-  (setq dashboard-banner-logo-title "Have a nice day, Son!")
-  (setq dashboard-items '((recents  . 5)
-                          (projects . 5)
-                          (bookmarks . 5)
-                          (registers . 5)))
-  )
+(require 'dashboard)
+(dashboard-setup-startup-hook)
 
-(use-package all-the-icons
-  :ensure t
-  )
+(use-package all-the-icons)
 
 (use-package doom-modeline
   :init (doom-modeline-mode 1))
@@ -264,8 +249,6 @@
 (global-set-key (kbd "C-; C-j") 'windmove-down)
 (global-set-key (kbd "C-; C-k") 'windmove-up)
 (global-set-key (kbd "C-; C-l") 'windmove-right)
-(global-set-key "\M-p" 'previous-buffer)
-(global-set-key "\M-n" 'next-buffer)
 (global-set-key "\C-x\C-n" 'other-window)
 (global-set-key "\C-x\C-p" 'other-window-backward)
 
@@ -289,22 +272,41 @@
   :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
   :ensure t)
 
-(setenv "NODE_EXTRA_CA_CERTS" "/home/sonnguyen9/work/03.keys/HN.cer")
-(setenv "LSP_USE_PLISTS" "true")
-
 (add-hook 'prog-mode-hook 'copilot-mode)
 (add-hook 'yaml-mode-hook 'copilot-mode)
-(define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
-(define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+;;(define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+;;(define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
 
 #+end_src
 ** File navigate & text editing
 #+begin_src emacs-lisp
-(use-package fzf
-  :ensure t)
+(defun xah-search-current-word ()
+  "Call `isearch' on current word or selection.
+“word” here is A to Z, a to z, and hyphen [-] and lowline [_], independent of syntax table.
+
+URL `http://xahlee.info/emacs/emacs/modernization_isearch.html'
+Version: 2015-04-09"
+  (interactive)
+  (let (xp1 xp2)
+    (if (region-active-p)
+        (setq xp1 (region-beginning) xp2 (region-end))
+      (save-excursion
+        (skip-chars-backward "-_A-Za-z0-9")
+        (setq xp1 (point))
+        (right-char)
+        (skip-chars-forward "-_A-Za-z0-9")
+        (setq xp2 (point))))
+    (setq mark-active nil)
+    (when (< xp1 (point))
+      (goto-char xp1))
+    (isearch-mode t)
+    (isearch-yank-string (buffer-substring-no-properties xp1 xp2))))
+
+(global-set-key (kbd "C-*") 'xah-search-current-word)
+
+(use-package fzf)
 
 (use-package ace-window
-  :ensure t
   :config
   (global-set-key (kbd "M-o") 'ace-window)
   (global-set-key (kbd "C-x o") 'ace-window)
@@ -331,10 +333,8 @@
    :map ivy-minibuffer-map
    )
   :init
-  (ivy-mode 0)
   ;; (bind-key "C-; l" 'counsel-projectile-switch-to-buffer)
   ;; (global-set-key (kbd "C-s") 'swiper-isearch)
-  (global-set-key (kbd "M-x") 'counsel-M-x)
   (global-set-key (kbd "C-x C-f") 'counsel-find-file)
   (global-set-key (kbd "M-y") 'counsel-yank-pop)
   (global-set-key (kbd "<f1> f") 'counsel-describe-function)
@@ -365,9 +365,7 @@
           (t . ivy--regex-fuzzy)))
   )
 
-(use-package ivy-posframe
-  :init
-  (ivy-posframe-mode 0))
+(use-package ivy-posframe)
 
 (use-package counsel
   :bind
@@ -391,13 +389,11 @@
 (use-package projectile
   :init
   (setq projectile-require-project-root nil)
-  (projectile-mode t)
   )
 
 (use-package counsel-projectile
   :bind
   (
-   ("C-S-o" . lsp-workspace-folders-switch)
    ("C-; C-f" . counsel-projectile-find-file)
    )
   )
@@ -434,9 +430,7 @@
   (bind-key "C-; t" 'dumb-jump-back))
 
 ;; Show search index
-(use-package anzu
-  :init
-  (global-anzu-mode +1))
+(use-package anzu)
 
 (use-package bm
   :config
@@ -504,22 +498,15 @@
 #+end_src
 ** Yasnipeet
 #+begin_src emacs-lisp
-(use-package yasnippet
-  :config
-  (add-hook 'prog-mode-hook #'yas-minor-mode)
-)
+;; (use-package yasnippet
+;;   :config
+;;   (add-hook 'prog-mode-hook #'yas-minor-mode)
+;; )
 
 #+end_src
-
 * Programming
-** Dev tools (git, flycheck...)
+** Dev tools
 #+begin_src emacs-lisp
-;; check syntax
-(use-package flycheck
-  :init (global-flycheck-mode 1))
-
-
-;; Magit
 (use-package magit
   :config
   (setq magit-log-arguments '("-n256" "--graph" "--decorate" "--color")
@@ -530,13 +517,13 @@
   (bind-key "C-x g" 'magit-status)
   (bind-key "C-; d" 'magit-diff-buffer-file))
 
-(use-package git-timemachine
-  :ensure t
-  )
+(use-package company-box)
 
 (use-package company
   :after lsp-mode
-  :hook (my-program-mode-hook . company-mode)
+  :hook
+  (my-program-mode-hook . company-mode)
+  (company-mode . company-box-mode)
   :bind
   (:map lsp-mode-map ("<tab>" . company-indent-or-complete-common))
   (:map company-active-map ("<tab>" . company-complete-selection))
@@ -544,7 +531,7 @@
   (:map company-active-map ("C-p" . company-select-previous))
   :custom
   (setq companyminimum-prefix-length 3)
-  (setq company-auto-complete nil)
+ (setq company-auto-complete nil)
   (setq company-idle-delay 0)
   (setq tab-always-indent 'complete)
   :config
@@ -552,252 +539,21 @@
   (define-key company-active-map (kbd "C-n") #'company-select-next)
   (define-key company-active-map (kbd "C-p") #'company-select-previous))
 
-(use-package company-box)
 
-(use-package company
-  :hook (company-mode . company-box-mode))
+
 
 #+end_src
-** Languages mode
-*** Lsp mode
-
+** Eglot
 #+begin_src emacs-lisp
-(defun efs/lsp-mode-setup ()
-  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-  (lsp-headerline-breadcrumb-mode))
-
-(use-package lsp-mode
-  :commands (lsp lsp-deferred)
-  :hook (
-  ;(lsp-mode . efs/lsp-mode-setup)
-  ((typescript-mode js2-mode web-mode php-mode) . lsp)
-  (css-mode-hook . lsp-deferred)
-  (html-mode-hook . lsp-deferred)
-  (web-mode-hook . lsp-deferred)
-  (js2-mode-hook . lsp-deferred)
-  (c++-mode-hook . lsp-deferred)
-  (c-mode-hook . lsp-deferred)
-  (java-mode-hook . lsp-deferred)
-  (lsp-mode-hook . lsp-enable-which-key-integration))
-  :commands (lsp lsp-deferred)
-
-  :init
-  (setq lsp-keymap-prefix "C-c l")
-  :config
-  (lsp-enable-which-key-integration t)
-  (setq gc-cons-threshold 200000000) ;; 200mb
-  (setq read-process-output-max (* 3 1024 1024)) ;; 3mb
-  (setq lsp-completion-provider :capf)
-  (setq lsp-restart 'auto-restart)
-  (setq lsp-ui-sideline-show-code-actions t)
-  ;; only enable watcher for python, java files
-   (setq lsp-enable-file-watchers nil)
-   (setq lsp-file-watch-threshold 20000)
-
-  :bind
-  (:map lsp-mode-map
-        ("TAB" . completion-at-point))
-  )
-
-(use-package lsp-ui
-  :hook (lsp-mode . lsp-ui-mode)
-  :init
-  (bind-key "C-; e l" 'lsp-ui-flycheck-list)
-  :config
-  (setq lsp-ui-sideline-diagnostics-max-lines 10))
-
-(use-package lsp-ivy)
-
-#+end_src
-*** DAP mode
-#+begin_src emacs-lisp
-(use-package dap-mode
+(use-package eglot
   :ensure t
   :defer t
-  :after lsp-mode
+  :hook (python-mode . eglot-ensure))
+#+end_src
+** Python
+#+begin_src emacs-lisp
+(use-package auto-virtualenv
   :config
-  (dap-auto-configure-mode)
-  :bind (:map dap-mode-map
-	      ("C-c C-d" . dap-java-debug)
-	      ("C-c R" . dap-java-run-test-class)
-	      ("C-c d" . dap-java-debug-test-method)
-	      ("C-c r" . dap-java-run-test-method)))
-
-(add-hook 'dap-stopped-hook
-          (lambda (arg) (call-interactively #'dap-hydra)))
-
+  (setq auto-virtualenv-verbose t)
+  (auto-virtualenv-setup))
 #+end_src
-
-*** Javascript
-#+begin_src emacs-lisp
-(use-package js-doc
-  :ensure t
-  :config
-  (add-hook 'js2-mode-hook
-            #'(lambda ()
-                (define-key js2-mode-map "\C-ci" 'js-doc-insert-function-doc)
-                (define-key js2-mode-map "@" 'js-doc-insert-tag)))
-  )
-
-(use-package js2-mode
-  :ensure t
-  :init
-  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
-
-
-
-(use-package typescript-mode
-  :mode "\\.ts\\'"
-  :hook
-  (typescript-mode . lsp-deferred)
-  :config
-  (setq typescript-indent-level 2))
-
-(use-package tide)
-(defun setup-tide-mode ()
-  (interactive)
-  (tide-setup)
-  (flycheck-mode +1)
-  (setq flycheck-check-syntax-automatically '(save mode-enabled))
-  (eldoc-mode +1)
-  (tide-hl-identifier-mode +1)
-  ;; company is an optional dependency. You have to
-  ;; install it separately via package-install
-  ;; `M-x package-install [ret] company`
-  (company-mode +1))
-
-(add-hook 'typescript-mode-hook #'setup-tide-mode)
-
-
-
-(use-package js2-mode
-  :init
-  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
-#+end_src
-
-*** Python
-#+begin_src emacs-lisp
-(use-package elpy
-  :ensure t
-  :init
-  (exec-path-from-shell-initialize)
-  (elpy-enable))
-
-;; (use-package lsp-pyright
-;;   :ensure t
-;;   :hook
-;;   (python-mode . (lambda ()
-;;                    (require 'lsp-pyright)
-;;                    (lsp-deferred))))
-(use-package jedi)
-(use-package eglot)
-
-;; Python
-(use-package pyvenv
-  :ensure t
-  :init
-  (setenv "WORKON_HOME" "~/miniconda3/envs/")
-  :config
-  (pyvenv-mode 1)
-  (setq pyvenv-post-activate-hooks
-        (list (lambda ()
-                (setq python-shell-interpreter (concat pyvenv-virtual-env "bin/python")))))
-  (setq pyvenv-post-deactivate-hooks
-        (list (lambda ()
-                (setq python-shell-interpreter "python3"))))
-  )
-
-(use-package blacken
-  :ensure t
-  :delight
-  :custom (blacken-line-length 79))
-
-(use-package python-mode
-  :hook
-  (python-mode . pyvenv-mode)
-  (python-mode . flycheck-mode)
-  (python-mode . company-mode)
-  (python-mode . blacken-mode)
-  :config
-  )
-
-(use-package py-isort
-  :ensure t
-  :after python
-  :hook ((python-mode . pyvenv-mode)
-         (before-save . py-isort-before-save)))
-
-#+end_src
-*** PHP
-#+begin_src emacs-lisp
-(use-package php-mode)
-#+end_src
-
-*** Web mode
-#+begin_src emacs-lisp
-(use-package web-mode
-  :config
-  (add-to-list 'auto-mode-alist '("\\.vue\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.jsx?$" . web-mode)) ;; auto-enable for .js/.jsx files
-  (add-to-list 'auto-mode-alist '("\\.tsx$" . web-mode)) ;; auto-enable for .js/.jsx files
-  ;;(setq web-mode-code-indent-offset 2)
-  ;;(setq web-mode-attr-indent-offset 2)
-  (setq web-mode-enable-auto-indentation nil)
-  )
-
-#+end_src
-
-*** Kotline
-#+begin_src emacs-lisp
-(use-package kotlin-mode)
-#+end_src
-
-*** CPP
-#+begin_src emacs-lisp
-(add-hook 'c-mode-hook 'lsp)
-(add-hook 'c++-mode-hook 'lsp)
-(add-hook 'c-mode-hook #'lsp-deferred)
-(add-hook 'c++-mode-hook #'lsp-deferred)
-;; disable flycheck for c++
-(add-hook 'c++-mode-hook (lambda () (flycheck-mode -1)))
-
-;; add key binding to compile and run c++ code
-;; switch to *compile-and-run* buffer to see the result
-(defun compile-and-run ()
-  "Compile and run current buffer file interactively."
-  (interactive)
-  (let ((file-name (file-name-nondirectory buffer-file-name)))
-    (switch-to-buffer-other-window "*compile-and-run*")
-    (erase-buffer)
-    (async-shell-command (concat "g++ -std=c++11 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -o " (file-name-sans-extension file-name) " " file-name " && ./" (file-name-sans-extension file-name)) "*compile-and-run*")
-    ))
-
-;; set key binding for compile-and-run, only in c++-mode
-(add-hook 'c++-mode-hook
-          (lambda ()
-            (local-set-key (kbd "C-c C-c") 'compile-and-run)))
-
-
-#+end_src
-
-*** Java
-#+begin_src emacs-lisp
-(use-package lsp-java
-  :config
-  (add-hook 'java-mode-hook 'lsp)
-  (setq lsp-java-vmargs '("-noverify" "-Xmx1G" "-XX:+UseG1GC" "-XX:+UseStringDeduplication" "-javaagent:/home/sonnguyen9/.m2/repository/org/projectlombok/lombok/1.18.26/lombok-1.18.26.jar" "-Xbootclasspath/a:/home/sonnguyen9/.m2/repository/org/projectlombok/lombok/1.18.26/lombok-1.18.26.jar"))
-
-)
-#+end_src
-
-*** Golang
-#+begin_src emacs-lisp
-(use-package go-mode)
-(add-hook 'go-mode-hook
-          (lambda ()
-            (setq-default)
-            (setq tab-width 2)
-            (setq standard-indent 2)
-            (setq indent-tabs-mode nil)))
-#+end_src
-
